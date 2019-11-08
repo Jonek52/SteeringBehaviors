@@ -110,6 +110,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)SteeringBehaviors;$(SolutionDir)Dependencies\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -129,6 +130,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)SteeringBehaviors;$(SolutionDir)Dependencies\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -186,6 +188,9 @@
     <ClCompile Include="Box2D\Dynamics\Joints\b2WheelJoint.cpp" />
     <ClCompile Include="Box2D\Rope\b2Rope.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Sources\Graphics\Game.cpp" />
+    <ClCompile Include="Sources\Graphics\Level.cpp" />
+    <ClCompile Include="Sources\Graphics\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Box2D\Box2D.h" />
@@ -235,6 +240,13 @@
     <ClInclude Include="Box2D\Dynamics\Joints\b2WeldJoint.h" />
     <ClInclude Include="Box2D\Dynamics\Joints\b2WheelJoint.h" />
     <ClInclude Include="Box2D\Rope\b2Rope.h" />
+    <ClInclude Include="Sources\Graphics\Game.h" />
+    <ClInclude Include="Sources\Graphics\GameEntity.h" />
+    <ClInclude Include="Sources\Graphics\Level.h" />
+    <ClInclude Include="Sources\Graphics\Player.h" />
+    <ClInclude Include="Sources\Graphics\Renderable.h" />
+    <ClInclude Include="Sources\Graphics\Updatable.h" />
+    <ClInclude Include="Sources\Input\InputHandling.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
