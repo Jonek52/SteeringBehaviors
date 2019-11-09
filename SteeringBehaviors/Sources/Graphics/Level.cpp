@@ -1,4 +1,4 @@
-#include "SFML\System\Vector2.hpp"
+#include "Box2D\Common\b2Math.h"
 #include "Level.h"
 #include "Player.h"
 
@@ -9,8 +9,8 @@ namespace Graphics
 
 void Level::init()
 {
-	auto player = std::make_unique< Player >( sf::Vector2< float >{ 400.0f, 300.0f } );
-	m_gameEntities.push_back( std::move( player ) );
+	auto player = std::make_unique< Player >( b2Vec2{ 400.0f, 300.0f } );
+	m_gameEntities.emplace_back( std::move( player ) );
 
 	initGameEntities();
 }
@@ -46,6 +46,14 @@ void Level::initGameEntities()
 	for( const auto& gameEntity : m_gameEntities )
 	{
 		gameEntity->init();
+	}
+}
+
+void Level::processInput( sf::Window* window )
+{
+	for( const auto& gameEntity : m_gameEntities )
+	{
+		gameEntity->processInput( window );
 	}
 }
 

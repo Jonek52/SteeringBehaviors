@@ -2,8 +2,7 @@
 
 namespace sf
 {
-class Keyboard;
-class Mouse;
+class Window;
 } // namespace sf
 namespace SteeringBehaviors
 {
@@ -12,7 +11,8 @@ namespace Input
 class InputHandling
 {
 public:
-	void processInput( Keyboard )
+	virtual ~InputHandling()				 = default;
+	virtual void processInput( sf::Window* ) = 0;
 };
 } // namespace Input
 } // namespace SteeringBehaviors

@@ -23,6 +23,7 @@ int main()
 			}
 		}
 
+		game.processInput( window );
 		game.update( deltaTime );
 		game.render( window );
 	}

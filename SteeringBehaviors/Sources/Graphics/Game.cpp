@@ -35,13 +35,17 @@ void Game::render( sf::RenderWindow* window )
 
 void Game::update( float deltaTime )
 {
-
 	m_level->update( deltaTime );
 }
 
 void Game::processEvents( sf::Event& event )
 {
 	m_level->processEvents( event );
+}
+
+void Game::processInput( sf::Window* window )
+{
+	m_level->processInput( window );
 }
 
 } // namespace Graphics

@@ -7,7 +7,8 @@
 namespace sf
 {
 class RenderWindow;
-}
+class Window;
+} // namespace sf
 namespace SteeringBehaviors
 {
 namespace Graphics
@@ -24,6 +25,7 @@ public:
 	virtual void update( float deltaTime ) override;
 	virtual void processEvents( Event& event ) override;
 	virtual void initGameEntities();
+	virtual void processInput( sf::Window* window ) override;
 
 private:
 	std::vector< std::unique_ptr< GameEntity > > m_gameEntities;

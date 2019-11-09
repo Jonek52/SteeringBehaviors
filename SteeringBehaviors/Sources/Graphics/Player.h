@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GameEntity.h"
-#include "SFML\System\Vector2.hpp"
+#include "Box2D\Common\b2Math.h"
 
 #include <memory>
 
@@ -16,8 +16,10 @@ namespace Graphics
 using sf::CircleShape;
 class Player : public GameEntity
 {
+	using Vec = b2Vec2;
+
 public:
-	explicit Player( sf::Vector2< float > position );
+	explicit Player( Vec position );
 	virtual ~Player();
 
 	virtual void init() override;
@@ -25,23 +27,28 @@ public:
 	virtual void render( RenderWindow* window ) override;
 	virtual void update( float deltaTime ) override;
 
-	virtual void calculateVelocity();
-
 	virtual void processEvents( Event& event ) override;
-	virtual void processInput();
-	virtual void handleKeyboard();
-	virtual void handleMouse();
+	virtual void processInput( sf::Window* window ) override;
+
+protected:
+	virtual void handleKeyboard( sf::Window* window );
+	virtual void handleMouse( sf::Window* window );
+
+	void move( float deltaTime );
+	void rotate( const Vec& targetDirection );
+
+	virtual void calculateVelocity();
 
 private:
 	std::unique_ptr< CircleShape > m_playerShape;
 
-	sf::Vector2< float > m_velocity;
-	sf::Vector2< float > m_position;
-	sf::Vector2< float > m_lookDirection;
+	Vec m_position;
+	Vec m_velocity;
+	Vec m_lookDirection;
 
 	const float m_maxSpeed;
 
-	bool m_isDirty{ false };
+	bool m_isDirty{ true };
 
 	bool m_moveUp{ false };
 	bool m_moveDown{ false };

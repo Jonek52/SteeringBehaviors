@@ -1,15 +1,20 @@
 #include <SFML\Graphics\Shape.hpp>
 #include <SFML\Graphics.hpp>
+#include <SFML\System\Vector2.hpp>
 
 #include "Player.h"
-#include "..\Math\MathFunctions.h"
+#include "../Math/MathFunctions.h"
 
 namespace SteeringBehaviors
 {
 namespace Graphics
 {
-Player::Player( sf::Vector2< float > position )
-	: m_playerShape{ nullptr }, m_position{ position }, m_velocity{ 0.0f, 0.0f }, m_maxSpeed{ 5.0f }
+Player::Player( Vec position )
+	: m_playerShape{ nullptr },
+	  m_position{ position },
+	  m_velocity{ 0.0f, 0.0f },
+	  m_lookDirection{ 0.0f, -1.0f },
+	  m_maxSpeed{ 5.0f }
 {
 }
 
@@ -18,68 +23,79 @@ Player::~Player() = default;
 void Player::init()
 {
 	m_playerShape = std::make_unique< CircleShape >( 20.0f, 3 );
-	m_playerShape->setPosition( m_position );
+	m_playerShape->setPosition( sf::Vector2< float >{ m_position.x, m_position.y } );
 	m_playerShape->setFillColor( sf::Color::Green );
+
+	float playerCenterX{ 0.0f };
+	float playerCenterY{ 0.0f };
+
+	for( int i = 0; i < m_playerShape->getPointCount(); ++i )
+	{
+		playerCenterX += m_playerShape->getPoint( i ).x;
+		playerCenterY += m_playerShape->getPoint( i ).y;
+	}
+
+	m_playerShape->setOrigin( sf::Vector2< float >{ playerCenterX / 3.0f, playerCenterY / 3.0f } );
 }
 
 void Player::teardown() {}
 
 void Player::render( RenderWindow* window )
 {
-	if( m_isDirty )
-	{
-		window->draw( *m_playerShape );
-	}
+	window->draw( *m_playerShape );
 }
 
 void Player::update( float deltaTime )
 {
-	processInput();
 	calculateVelocity();
 
-	m_position = m_position + m_velocity;
-	m_playerShape->setPosition( m_position );
-	m_isDirty = true;
+	if( m_velocity.LengthSquared() > 0.0f )
+	{
+		move( deltaTime );
+	}
+}
 
+void Player::move( float deltaTime )
+{
+	m_velocity *= deltaTime;
+	m_position = m_position + m_velocity;
+	m_playerShape->setPosition( sf::Vector2< float >{ m_position.x, m_position.y } );
 }
 
 void Player::calculateVelocity()
 {
-	m_velocity = sf::Vector2< float >{ 0.0f, 0.0f };
+	m_velocity = Vec{ 0.0f, 0.0f };
 
 	if( m_moveLeft )
-		m_velocity += sf::Vector2< float >{ -1.0f, 0.0f };
+		m_velocity += Vec{ -1.0f, 0.0f };
 
 	if( m_moveRight )
-		m_velocity += sf::Vector2< float >{ 1.0f, 0.0f };
+		m_velocity += Vec{ 1.0f, 0.0f };
 
 	if( m_moveLeft && m_moveRight )
-		m_velocity += sf::Vector2< float >{ 0.0f, 0.0f };
+		m_velocity += Vec{ 0.0f, 0.0f };
 
 	if( m_moveUp )
-		m_velocity += sf::Vector2< float >{ 0.0f, 1.0f };
+		m_velocity += Vec{ 0.0f, 1.0f };
 
 	if( m_moveDown )
-		m_velocity += sf::Vector2< float >{ 0.0f, -1.0f };
+		m_velocity += Vec{ 0.0f, -1.0f };
 
 	if( m_moveUp && m_moveDown )
-		m_velocity += sf::Vector2< float >{ 0.0f, 0.0f };
+		m_velocity += Vec{ 0.0f, 0.0f };
 
-	if( Math::vectorLenght( m_velocity ) > 0.0f )
-	{
-		m_velocity = Math::normalizeVector( m_velocity );
-		m_velocity = m_velocity * m_maxSpeed;
-	}
+	m_velocity.Normalize();
+	m_velocity *= m_maxSpeed;
 }
 
 void Player::processEvents( Event& event ) {}
 
-void Player::processInput()
+void Player::processInput( sf::Window* window )
 {
-	handleKeyboard();
-	handleMouse();
+	handleKeyboard( window );
+	handleMouse( window );
 }
-void Player::handleKeyboard()
+void Player::handleKeyboard( sf::Window* window )
 {
 	using sf::Keyboard;
 
@@ -103,7 +119,26 @@ void Player::handleKeyboard()
 	else
 		m_moveUp = false;
 }
-void Player::handleMouse() {}
+void Player::handleMouse( sf::Window* window )
+{
+	sf::Vector2i mousePosition = sf::Mouse::getPosition( *window );
+	Vec b2mousePosition		   = Math::toBox2DVector( mousePosition );
+	Vec targetDirection		   = b2mousePosition - m_position;
+	targetDirection.Normalize();
+
+	rotate( targetDirection );
+}
+
+void Player::rotate( const Vec& targetDirection )
+{
+	float cos				   = m_lookDirection.x * targetDirection.x + m_lookDirection.y * targetDirection.y;
+	float sin				   = m_lookDirection.x * targetDirection.y - m_lookDirection.y * targetDirection.x;
+	float rotationAngle		   = atan2( sin, cos );
+	float rotationAngleDegrees = Math::toDegrees( rotationAngle );
+
+	m_lookDirection = targetDirection;
+	m_playerShape->rotate( rotationAngleDegrees );
+}
 
 } // namespace Graphics
 } // namespace SteeringBehaviors
