@@ -19,7 +19,7 @@ int main()
 				window->close();
 			else
 			{
-				game.processInput( event );
+				game.processEvents( event );
 			}
 		}
 

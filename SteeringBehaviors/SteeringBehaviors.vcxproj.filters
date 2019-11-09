@@ -326,7 +326,13 @@
     <ClInclude Include="Sources\Graphics\Level.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Input\EventHandling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Sources\Input\InputHandling.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Math\MathFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

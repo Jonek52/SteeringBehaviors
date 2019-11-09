@@ -2,7 +2,7 @@
 
 #include "Updatable.h"
 #include "Renderable.h"
-#include "../Input/InputHandling.h"
+#include "../Input/EventHandling.h"
 
 #include <memory>
 
@@ -12,7 +12,7 @@ namespace Graphics
 {
 
 class Level;
-class Game : public Updatable, public Renderable, public Input::InputHandling
+class Game : public Updatable, public Renderable, public Input::EventHandling
 {
 public:
 	Game();
@@ -29,7 +29,7 @@ public:
 	virtual void teardown();
 	virtual void render( sf::RenderWindow* window ) override;
 	virtual void update( float deltaTime ) override;
-	virtual void processInput( sf::Event& event ) override;
+	virtual void processEvents( sf::Event& event ) override;
 
 private:
 	std::unique_ptr< Level > m_level;

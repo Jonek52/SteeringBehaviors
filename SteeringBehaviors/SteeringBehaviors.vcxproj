@@ -246,7 +246,9 @@
     <ClInclude Include="Sources\Graphics\Player.h" />
     <ClInclude Include="Sources\Graphics\Renderable.h" />
     <ClInclude Include="Sources\Graphics\Updatable.h" />
+    <ClInclude Include="Sources\Input\EventHandling.h" />
     <ClInclude Include="Sources\Input\InputHandling.h" />
+    <ClInclude Include="Sources\Math\MathFunctions.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

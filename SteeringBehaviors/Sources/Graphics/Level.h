@@ -22,7 +22,7 @@ public:
 	virtual void teardown() override;
 	virtual void render( sf::RenderWindow* window ) override;
 	virtual void update( float deltaTime ) override;
-	virtual void processInput( Event& event ) override;
+	virtual void processEvents( Event& event ) override;
 	virtual void initGameEntities();
 
 private:

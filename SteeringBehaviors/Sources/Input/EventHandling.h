@@ -2,17 +2,18 @@
 
 namespace sf
 {
-class Keyboard;
-class Mouse;
-} // namespace sf
+class Event;
+}
 namespace SteeringBehaviors
 {
+using sf::Event;
 namespace Input
 {
-class InputHandling
+class EventHandling
 {
 public:
-	void processInput( Keyboard )
+	virtual ~EventHandling()			= default;
+	virtual void processEvents( Event& ) = 0;
 };
 } // namespace Input
 } // namespace SteeringBehaviors

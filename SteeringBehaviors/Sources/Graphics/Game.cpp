@@ -39,9 +39,9 @@ void Game::update( float deltaTime )
 	m_level->update( deltaTime );
 }
 
-void Game::processInput( sf::Event& event )
+void Game::processEvents( sf::Event& event )
 {
-	m_level->processInput( event );
+	m_level->processEvents( event );
 }
 
 } // namespace Graphics

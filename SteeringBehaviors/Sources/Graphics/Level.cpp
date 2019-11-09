@@ -1,3 +1,4 @@
+#include "SFML\System\Vector2.hpp"
 #include "Level.h"
 #include "Player.h"
 
@@ -8,7 +9,7 @@ namespace Graphics
 
 void Level::init()
 {
-	auto player = std::make_unique< Player >();
+	auto player = std::make_unique< Player >( sf::Vector2< float >{ 400.0f, 300.0f } );
 	m_gameEntities.push_back( std::move( player ) );
 
 	initGameEntities();
@@ -32,11 +33,11 @@ void Level::update( float deltaTime )
 	}
 }
 
-void Level::processInput( Event& event )
+void Level::processEvents( Event& event )
 {
 	for( const auto& gameEnity : m_gameEntities )
 	{
-		gameEnity->processInput( event );
+		gameEnity->processEvents( event );
 	}
 }
 

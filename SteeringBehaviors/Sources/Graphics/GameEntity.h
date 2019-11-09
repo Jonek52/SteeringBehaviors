@@ -2,13 +2,13 @@
 
 #include "Renderable.h"
 #include "Updatable.h"
-#include "../Input/InputHandling.h"
+#include "../Input/EventHandling.h"
 
 namespace SteeringBehaviors
 {
 namespace Graphics
 {
-class GameEntity : public Updatable, public Renderable, public Input::InputHandling
+class GameEntity : public Updatable, public Renderable, public Input::EventHandling
 {
 public:
 	virtual ~GameEntity()	= default;
