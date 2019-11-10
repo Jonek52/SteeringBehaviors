@@ -1,25 +1,22 @@
 #pragma once
 
 #include "GameEntity.h"
-#include "Box2D\Common\b2Math.h"
-
 #include <memory>
 
 namespace sf
 {
-class CircleShape;
+class Shape;
 }
 namespace SteeringBehaviors
 {
 namespace Graphics
 {
-using sf::CircleShape;
+using sf::Shape;
+class GameWorld;
 class Player : public GameEntity
 {
-	using Vec = b2Vec2;
-
 public:
-	explicit Player( Vec position );
+	Player( GameWorld* gameWorld, Vec position, float maxSpeed );
 	virtual ~Player();
 
 	virtual void init() override;
@@ -27,12 +24,13 @@ public:
 	virtual void render( RenderWindow* window ) override;
 	virtual void update( float deltaTime ) override;
 
-	virtual void processEvents( Event& event ) override;
-	virtual void processInput( sf::Window* window ) override;
+	virtual void processInput() override;
+	virtual void processEvents( sf::Event& event ) override;
 
 protected:
-	virtual void handleKeyboard( sf::Window* window );
-	virtual void handleMouse( sf::Window* window );
+	virtual void clampScreenPosition() override;
+	virtual void handleKeyboard();
+	virtual void handleMouse();
 
 	void move( float deltaTime );
 	void rotate( const Vec& targetDirection );
@@ -40,16 +38,6 @@ protected:
 	virtual void calculateVelocity();
 
 private:
-	std::unique_ptr< CircleShape > m_playerShape;
-
-	Vec m_position;
-	Vec m_velocity;
-	Vec m_lookDirection;
-
-	const float m_maxSpeed;
-
-	bool m_isDirty{ true };
-
 	bool m_moveUp{ false };
 	bool m_moveDown{ false };
 	bool m_moveRight{ false };

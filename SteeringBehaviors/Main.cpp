@@ -3,12 +3,13 @@
 
 #include <memory>
 
+constexpr float deltaTime = 1.0f / 60.0f;
+
 int main()
 {
-	constexpr float deltaTime = 1.0f / 60.0f;
-	auto window				  = new sf::RenderWindow{ sf::VideoMode( 800, 600 ), "SFML works!" };
+	auto window = new sf::RenderWindow{ sf::VideoMode( 800, 600 ), "SFML works!" };
 
-	SteeringBehaviors::Graphics::Game game;
+	SteeringBehaviors::Graphics::Game game{ window };
 
 	while( window->isOpen() )
 	{
@@ -23,7 +24,7 @@ int main()
 			}
 		}
 
-		game.processInput( window );
+		game.processInput();
 		game.update( deltaTime );
 		game.render( window );
 	}

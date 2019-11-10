@@ -159,10 +159,13 @@
     <ClCompile Include="Sources\Graphics\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Graphics\Level.cpp">
+    <ClCompile Include="Sources\Graphics\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Sources\Graphics\Player.cpp">
+    <ClCompile Include="Sources\Graphics\GameWorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Graphics\GameEntity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -323,16 +326,13 @@
     <ClInclude Include="Sources\Graphics\Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Sources\Graphics\Level.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Input\EventHandling.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Sources\Input\InputHandling.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sources\Math\MathFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Graphics\GameWorld.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,27 +1,28 @@
 #include "Game.h"
-#include "Level.h"
+#include "GameWorld.h"
 
 #include <SFML\Graphics.hpp>
+#include <SFML\Window.hpp>
 
 namespace SteeringBehaviors
 {
 namespace Graphics
 {
-Game::Game() : m_level{ nullptr }
+Game::Game( sf::Window* window ) : m_mainWindow{ window }, m_gameWorld{ nullptr }
 {
 	init();
 };
 
 Game::~Game() = default;
 
-Game::Game( Game&& ) = default;
+Game::Game( Game&& ) noexcept = default;
 
 Game& Game::operator=( Game&& ) = default;
 
 void Game::init()
 {
-	m_level = std::make_unique< Level >();
-	m_level->init();
+	m_gameWorld = std::make_unique< GameWorld >( m_mainWindow );
+	m_gameWorld->init();
 }
 
 void Game::teardown(){};
@@ -29,23 +30,23 @@ void Game::teardown(){};
 void Game::render( sf::RenderWindow* window )
 {
 	window->clear();
-	m_level->render( window );
+	m_gameWorld->render( window );
 	window->display();
 }
 
 void Game::update( float deltaTime )
 {
-	m_level->update( deltaTime );
+	m_gameWorld->update( deltaTime );
+}
+
+void Game::processInput()
+{
+	m_gameWorld->processInput();
 }
 
 void Game::processEvents( sf::Event& event )
 {
-	m_level->processEvents( event );
-}
-
-void Game::processInput( sf::Window* window )
-{
-	m_level->processInput( window );
+	m_gameWorld->processEvents( event );
 }
 
 } // namespace Graphics

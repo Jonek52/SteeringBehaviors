@@ -33,14 +33,14 @@ sf::Vector2< T > normalizeVector( sf::Vector2< T > v )
 
 inline float toDegrees( float radians )
 {
-	float inversePI = 1.0f / M_PI;
+	float inversePI = 1.0f / static_cast< float >( M_PI );
 	return radians * ( 180.0f * inversePI );
 }
 
 inline float toRadians( float degrees )
 {
 	float inverse180 = 1.0f / 180.0f;
-	return degrees * ( M_PI * inverse180 );
+	return degrees * ( static_cast< float >( M_PI ) * inverse180 );
 }
 
 template< typename T >

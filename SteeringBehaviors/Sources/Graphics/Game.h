@@ -2,24 +2,28 @@
 
 #include "Updatable.h"
 #include "Renderable.h"
-#include "../Input/EventHandling.h"
 #include "../Input/InputHandling.h"
 
 #include <memory>
 
+namespace sf
+{
+class Window;
+}
 namespace SteeringBehaviors
 {
 namespace Graphics
 {
 
-class Level;
-class Game : public Updatable, public Renderable, public Input::EventHandling, public Input::InputHandling
+class GameWorld;
+class Game : public Updatable, public Renderable, public Input::InputHandling
 {
+
 public:
-	Game();
+	explicit Game( sf::Window* window );
 	virtual ~Game();
 
-	Game( Game&& );
+	Game( Game&& ) noexcept;
 	Game& operator=( Game&& );
 
 	Game( const Game& ) = delete;
@@ -30,11 +34,12 @@ public:
 	virtual void teardown();
 	virtual void render( sf::RenderWindow* window ) override;
 	virtual void update( float deltaTime ) override;
+	virtual void processInput() override;
 	virtual void processEvents( sf::Event& event ) override;
-	virtual void processInput( sf::Window* window ) override;
 
 private:
-	std::unique_ptr< Level > m_level;
+	sf::Window* m_mainWindow;
+	std::unique_ptr< GameWorld > m_gameWorld;
 };
 
 } // namespace Graphics

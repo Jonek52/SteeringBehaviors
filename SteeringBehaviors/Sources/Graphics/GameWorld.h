@@ -13,21 +13,25 @@ namespace SteeringBehaviors
 {
 namespace Graphics
 {
-class Level : public GameEntity
+class GameWorld : public Updatable, public Renderable, public Input::InputHandling
 {
 public:
-	Level()	 = default;
-	~Level() = default;
+	explicit GameWorld( sf::Window* window );
+	~GameWorld() = default;
 
-	virtual void init() override;
-	virtual void teardown() override;
+	virtual void init();
+	virtual void teardown();
 	virtual void render( sf::RenderWindow* window ) override;
 	virtual void update( float deltaTime ) override;
-	virtual void processEvents( Event& event ) override;
+	virtual void processInput() override;
+	virtual void processEvents( sf::Event& event ) override;
+	virtual sf::Window* getWindow() const;
+
+protected:
 	virtual void initGameEntities();
-	virtual void processInput( sf::Window* window ) override;
 
 private:
+	sf::Window* m_mainWindow;
 	std::vector< std::unique_ptr< GameEntity > > m_gameEntities;
 };
 

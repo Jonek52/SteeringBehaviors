@@ -1,7 +1,8 @@
-#include <SFML\Graphics\Shape.hpp>
+#include <SFML\Graphics\CircleShape.hpp>
 #include <SFML\Graphics.hpp>
 #include <SFML\System\Vector2.hpp>
 
+#include "GameWorld.h"
 #include "Player.h"
 #include "../Math/MathFunctions.h"
 
@@ -9,40 +10,34 @@ namespace SteeringBehaviors
 {
 namespace Graphics
 {
-Player::Player( Vec position )
-	: m_playerShape{ nullptr },
-	  m_position{ position },
-	  m_velocity{ 0.0f, 0.0f },
-	  m_lookDirection{ 0.0f, -1.0f },
-	  m_maxSpeed{ 5.0f }
-{
-}
+Player::Player( GameWorld* gameWorld, Vec position, float maxSpeed ) : GameEntity( gameWorld, position, maxSpeed ) {}
 
 Player::~Player() = default;
 
 void Player::init()
 {
-	m_playerShape = std::make_unique< CircleShape >( 20.0f, 3 );
-	m_playerShape->setPosition( sf::Vector2< float >{ m_position.x, m_position.y } );
-	m_playerShape->setFillColor( sf::Color::Green );
+	m_objectGfxShape = std::make_unique< sf::CircleShape >( 20.0f, 3 );
+	m_objectGfxShape->setFillColor( sf::Color::Green );
 
 	float playerCenterX{ 0.0f };
 	float playerCenterY{ 0.0f };
 
-	for( int i = 0; i < m_playerShape->getPointCount(); ++i )
+	for( int i = 0; i < m_objectGfxShape->getPointCount(); ++i )
 	{
-		playerCenterX += m_playerShape->getPoint( i ).x;
-		playerCenterY += m_playerShape->getPoint( i ).y;
+		playerCenterX += m_objectGfxShape->getPoint( i ).x;
+		playerCenterY += m_objectGfxShape->getPoint( i ).y;
 	}
 
-	m_playerShape->setOrigin( sf::Vector2< float >{ playerCenterX / 3.0f, playerCenterY / 3.0f } );
+	m_objectGfxShape->setOrigin( sf::Vector2< float >{ playerCenterX / 3.0f, playerCenterY / 3.0f } );
+	m_position = Math::toBox2DVector( m_objectGfxShape->getOrigin() );
+	m_objectGfxShape->setPosition( sf::Vector2< float >{ m_position.x, m_position.y } );
 }
 
 void Player::teardown() {}
 
 void Player::render( RenderWindow* window )
 {
-	window->draw( *m_playerShape );
+	window->draw( *m_objectGfxShape );
 }
 
 void Player::update( float deltaTime )
@@ -52,6 +47,7 @@ void Player::update( float deltaTime )
 	if( m_velocity.LengthSquared() > 0.0f )
 	{
 		move( deltaTime );
+		clampScreenPosition();
 	}
 }
 
@@ -59,7 +55,7 @@ void Player::move( float deltaTime )
 {
 	m_velocity *= deltaTime;
 	m_position = m_position + m_velocity;
-	m_playerShape->setPosition( sf::Vector2< float >{ m_position.x, m_position.y } );
+	m_objectGfxShape->setPosition( sf::Vector2< float >{ m_position.x, m_position.y } );
 }
 
 void Player::calculateVelocity()
@@ -88,14 +84,15 @@ void Player::calculateVelocity()
 	m_velocity *= m_maxSpeed;
 }
 
-void Player::processEvents( Event& event ) {}
-
-void Player::processInput( sf::Window* window )
+void Player::processInput()
 {
-	handleKeyboard( window );
-	handleMouse( window );
+	handleKeyboard();
+	handleMouse();
 }
-void Player::handleKeyboard( sf::Window* window )
+
+void Player::processEvents( sf::Event& event ) {}
+
+void Player::handleKeyboard()
 {
 	using sf::Keyboard;
 
@@ -119,9 +116,9 @@ void Player::handleKeyboard( sf::Window* window )
 	else
 		m_moveUp = false;
 }
-void Player::handleMouse( sf::Window* window )
+void Player::handleMouse()
 {
-	sf::Vector2i mousePosition = sf::Mouse::getPosition( *window );
+	sf::Vector2i mousePosition = sf::Mouse::getPosition( *m_gameWorld->getWindow() );
 	Vec b2mousePosition		   = Math::toBox2DVector( mousePosition );
 	Vec targetDirection		   = b2mousePosition - m_position;
 	targetDirection.Normalize();
@@ -137,7 +134,35 @@ void Player::rotate( const Vec& targetDirection )
 	float rotationAngleDegrees = Math::toDegrees( rotationAngle );
 
 	m_lookDirection = targetDirection;
-	m_playerShape->rotate( rotationAngleDegrees );
+	m_objectGfxShape->rotate( rotationAngleDegrees );
+}
+
+void Player::clampScreenPosition()
+{
+	sf::CircleShape* playerShape = dynamic_cast< sf::CircleShape* >( m_objectGfxShape.get() );
+
+	float currentPosX = playerShape->getPosition().x;
+	float currentPosY = playerShape->getPosition().y;
+
+	if( currentPosX > m_gameWorld->getWindow()->getSize().x - playerShape->getRadius() )
+	{
+		currentPosX = m_gameWorld->getWindow()->getSize().x - playerShape->getRadius();
+	}
+	else if( currentPosX < 0.0f + playerShape->getRadius() )
+	{
+		currentPosX = 0.0f + playerShape->getRadius();
+	}
+
+	if( currentPosY > m_gameWorld->getWindow()->getSize().y - playerShape->getRadius() )
+	{
+		currentPosY = m_gameWorld->getWindow()->getSize().y - playerShape->getRadius();
+	}
+	else if( currentPosY < 0.0f + playerShape->getRadius() )
+	{
+		currentPosY = 0.0f + playerShape->getRadius();
+	}
+
+	m_position = Vec{ currentPosX, currentPosY };
 }
 
 } // namespace Graphics

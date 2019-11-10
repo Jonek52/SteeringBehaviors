@@ -189,7 +189,8 @@
     <ClCompile Include="Box2D\Rope\b2Rope.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Sources\Graphics\Game.cpp" />
-    <ClCompile Include="Sources\Graphics\Level.cpp" />
+    <ClCompile Include="Sources\Graphics\GameEntity.cpp" />
+    <ClCompile Include="Sources\Graphics\GameWorld.cpp" />
     <ClCompile Include="Sources\Graphics\Player.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -242,11 +243,10 @@
     <ClInclude Include="Box2D\Rope\b2Rope.h" />
     <ClInclude Include="Sources\Graphics\Game.h" />
     <ClInclude Include="Sources\Graphics\GameEntity.h" />
-    <ClInclude Include="Sources\Graphics\Level.h" />
+    <ClInclude Include="Sources\Graphics\GameWorld.h" />
     <ClInclude Include="Sources\Graphics\Player.h" />
     <ClInclude Include="Sources\Graphics\Renderable.h" />
     <ClInclude Include="Sources\Graphics\Updatable.h" />
-    <ClInclude Include="Sources\Input\EventHandling.h" />
     <ClInclude Include="Sources\Input\InputHandling.h" />
     <ClInclude Include="Sources\Math\MathFunctions.h" />
   </ItemGroup>
