@@ -48,5 +48,10 @@ b2Vec2 toBox2DVector( sf::Vector2< T > vector )
 {
 	return b2Vec2{ static_cast< float32 >( vector.x ), static_cast< float32 >( vector.y ) };
 }
+
+inline sf::Vector2f toSFMLVector( const b2Vec2& vector )
+{
+	return sf::Vector2f{ vector.x, vector.y };
+}
 } // namespace Math
 } // namespace SteeringBehaviors

@@ -192,6 +192,7 @@
     <ClCompile Include="Sources\Graphics\GameEntity.cpp" />
     <ClCompile Include="Sources\Graphics\GameWorld.cpp" />
     <ClCompile Include="Sources\Graphics\Player.cpp" />
+    <ClCompile Include="Sources\Graphics\Wall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Box2D\Box2D.h" />
@@ -247,6 +248,7 @@
     <ClInclude Include="Sources\Graphics\Player.h" />
     <ClInclude Include="Sources\Graphics\Renderable.h" />
     <ClInclude Include="Sources\Graphics\Updatable.h" />
+    <ClInclude Include="Sources\Graphics\Wall.h" />
     <ClInclude Include="Sources\Input\InputHandling.h" />
     <ClInclude Include="Sources\Math\MathFunctions.h" />
   </ItemGroup>

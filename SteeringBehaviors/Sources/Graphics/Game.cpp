@@ -17,7 +17,7 @@ Game::~Game() = default;
 
 Game::Game( Game&& ) noexcept = default;
 
-Game& Game::operator=( Game&& ) = default;
+Game& Game::operator=( Game&& ) noexcept = default;
 
 void Game::init()
 {
@@ -34,11 +34,15 @@ void Game::render( sf::RenderWindow* window )
 	window->display();
 }
 
-void Game::update( float deltaTime )
+void Game::update()
 {
-	m_gameWorld->update( deltaTime );
+	m_gameWorld->update();
 }
 
+void Game::step( float deltaTime )
+{
+	m_gameWorld->step( deltaTime );
+}
 void Game::processInput()
 {
 	m_gameWorld->processInput();

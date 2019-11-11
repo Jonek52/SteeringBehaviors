@@ -7,7 +7,7 @@ constexpr float deltaTime = 1.0f / 60.0f;
 
 int main()
 {
-	auto window = new sf::RenderWindow{ sf::VideoMode( 800, 600 ), "SFML works!" };
+	auto window = new sf::RenderWindow{ sf::VideoMode( 1920, 1080 ), "SFML works!" };
 
 	SteeringBehaviors::Graphics::Game game{ window };
 
@@ -25,7 +25,8 @@ int main()
 		}
 
 		game.processInput();
-		game.update( deltaTime );
+		game.update();
+		game.step( deltaTime );
 		game.render( window );
 	}
 

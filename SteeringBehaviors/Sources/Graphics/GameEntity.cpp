@@ -1,5 +1,7 @@
 #include "SFML\Graphics\Shape.hpp"
 
+#include "Box2D\Dynamics\b2Body.h"
+
 #include "GameEntity.h"
 #include "GameWorld.h"
 
@@ -7,13 +9,12 @@ namespace SteeringBehaviors
 {
 namespace Graphics
 {
-GameEntity::GameEntity( GameWorld* gameWorld, Vec position, float maxSpeed )
+GameEntity::GameEntity( GameWorld* gameWorld, float maxForceValue )
 	: m_gameWorld{ gameWorld },
-	  m_position{ position },
-	  m_velocity{ 0.0f, 0.0f },
+	  m_physicalBody{ nullptr },
 	  m_lookDirection{ 0.0f, -1.0f },
-	  m_rightDirection{ 1.0f, 0.0f },
-	  m_maxSpeed{ maxSpeed }
+	  m_sideDirection{ 1.0f, 0.0f },
+	  m_maxForceValue{ maxForceValue }
 {
 }
 

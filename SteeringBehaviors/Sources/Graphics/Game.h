@@ -24,7 +24,7 @@ public:
 	virtual ~Game();
 
 	Game( Game&& ) noexcept;
-	Game& operator=( Game&& );
+	Game& operator=( Game&& ) noexcept;
 
 	Game( const Game& ) = delete;
 
@@ -33,7 +33,8 @@ public:
 	virtual void init();
 	virtual void teardown();
 	virtual void render( sf::RenderWindow* window ) override;
-	virtual void update( float deltaTime ) override;
+	virtual void update() override;
+	virtual void step( float deltaTime );
 	virtual void processInput() override;
 	virtual void processEvents( sf::Event& event ) override;
 

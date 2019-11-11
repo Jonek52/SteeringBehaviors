@@ -1,25 +1,36 @@
 #pragma once
-
 #include "GameEntity.h"
-#include <memory>
 
 namespace sf
 {
 class Shape;
 }
-class b2Body;
 
 namespace SteeringBehaviors
 {
 namespace Graphics
 {
-using sf::Shape;
 class GameWorld;
-class Player : public GameEntity
+class Wall : public GameEntity
 {
 public:
-	Player( GameWorld* gameWorld, float maxSpeed, const Vec& position );
-	virtual ~Player();
+	enum class Orientation
+	{
+		HORIZONTAL,
+		VERTICAL
+	};
+
+	enum class Side
+	{
+		LEFT,
+		RIGHT,
+		UP,
+		DOWN
+	};
+
+public:
+	Wall( GameWorld* gameWorld, float maxSpeed, const Vec& position, Orientation orientation, Side side );
+	~Wall();
 
 	virtual void init() override;
 	virtual void teardown() override;
@@ -28,24 +39,16 @@ public:
 
 	virtual void processInput() override;
 	virtual void processEvents( sf::Event& event ) override;
-
-protected:
 	virtual void wrapScreenPosition() override;
-	virtual void handleKeyboard();
-	virtual void handleMouse();
-
-	void move( float deltaTime );
-	void rotate();
-
-	virtual void applyForce();
 
 private:
-	bool m_moveUp{ false };
-	bool m_moveDown{ false };
-	bool m_moveRight{ false };
-	bool m_moveLeft{ false };
-	Vec m_targetDirection;
-};
+	void calculateWallSize();
+	void calculateWallPosition();
 
+private:
+	Orientation m_orientation;
+	Side m_side;
+};
 } // namespace Graphics
+
 } // namespace SteeringBehaviors

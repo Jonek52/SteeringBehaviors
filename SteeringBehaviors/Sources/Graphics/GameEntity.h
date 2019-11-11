@@ -12,6 +12,8 @@ namespace sf
 {
 class Shape;
 }
+class b2Body;
+
 namespace SteeringBehaviors
 {
 namespace Graphics
@@ -23,24 +25,23 @@ protected:
 	using Vec = b2Vec2;
 
 public:
-	explicit GameEntity( GameWorld* gameWorld, Vec position, float maxSpeed );
+	explicit GameEntity( GameWorld* gameWorld, float maxSpeed );
 	virtual ~GameEntity();
 	virtual void init()		= 0;
 	virtual void teardown() = 0;
 
 protected:
-	virtual void clampScreenPosition() = 0;
+	virtual void wrapScreenPosition() = 0;
 
 protected:
 	GameWorld* m_gameWorld;
-	std::unique_ptr< sf::Shape > m_objectGfxShape;
+	std::unique_ptr< sf::Shape > m_graphicalBody;
+	b2Body* m_physicalBody;
 
-	Vec m_position;
-	Vec m_velocity;
 	Vec m_lookDirection;
-	Vec m_rightDirection;
+	Vec m_sideDirection;
 
-	const float m_maxSpeed;
+	const float m_maxForceValue;
 };
 
 } // namespace Graphics
