@@ -24,11 +24,19 @@ GameWorld::GameWorld( sf::Window* window )
 void GameWorld::init()
 {
 	auto player = std::make_unique< Player >( this, 50.0f );
-	m_gameEntities.emplace_back( std::move( player ) );
+	m_gameEntities.push_back( std::move( player ) );
 
 	auto leftWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::VERTICAL, Wall::Side::LEFT );
-	m_gameEntities.emplace_back( std::move( leftWall ) );
-	// initGameEntities();
+	m_gameEntities.push_back( std::move( leftWall ) );
+
+	auto rightWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::VERTICAL, Wall::Side::RIGHT );
+	m_gameEntities.push_back( std::move( rightWall ) );
+
+	auto upperWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::HORIZONTAL, Wall::Side::UP );
+	m_gameEntities.push_back( std::move( upperWall ) );
+
+	auto downWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::HORIZONTAL, Wall::Side::DOWN );
+	m_gameEntities.push_back( std::move( downWall ) );
 }
 
 void GameWorld::teardown() {}

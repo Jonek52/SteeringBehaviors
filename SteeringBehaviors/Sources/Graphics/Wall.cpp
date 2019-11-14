@@ -26,29 +26,13 @@ Wall::~Wall() = default;
 
 void Wall::init()
 {
-	b2BodyDef wallBodyDef;
-	wallBodyDef.type = b2_staticBody;
-	wallBodyDef.position.Set( 20.0f, static_cast< float >( m_gameWorld->getWindow()->getSize().y / 2 ) );
-	m_physicalBody = m_gameWorld->getPhysicalWorld()->CreateBody( &wallBodyDef );
 
-	calculateWallPosition();
-	calculateWallSize();
-
-	m_graphicalBody->setFillColor( sf::Color::Blue );
-	// b2PolygonShape wallShape;
-
-	// Vec wallShapeVertices[ 4 ];
-
-	// for( size_t i = 0; i < 4; i++ )
-	//{
-	//	wallShapeVertices[ i ] = Math::toBox2DVector( m_graphicalBody->getPoint( i ) );
-	//}
-
-	// wallShape.Set( wallShapeVertices, 4 );
-	// m_physicalBody->CreateFixture( &wallShape, 1.0f );
+	initPhysicalPart();
+	initGfxPart();
 }
 
 void Wall::teardown() {}
+
 void Wall::render( RenderWindow* window )
 {
 	window->draw( *m_graphicalBody );
@@ -59,41 +43,67 @@ void Wall::update() {}
 void Wall::processInput() {}
 void Wall::processEvents( sf::Event& event ) {}
 
-void Wall::calculateWallSize()
+void Wall::initPhysicalPart()
 {
+	b2BodyDef wallBodyDef;
+	wallBodyDef.type = b2_staticBody;
+
+	switch( m_side )
+	{
+	case Side::LEFT:
+		wallBodyDef.position.Set( width / 2.f, m_gameWorld->getWindow()->getSize().y / 2 );
+		break;
+	case Side::RIGHT:
+		wallBodyDef.position.Set( m_gameWorld->getWindow()->getSize().x - width / 2.f,
+								  m_gameWorld->getWindow()->getSize().y / 2 );
+		break;
+	case Side::UP:
+		wallBodyDef.position.Set( m_gameWorld->getWindow()->getSize().x / 2.f, width / 2.f );
+		break;
+	case Side::DOWN:
+		wallBodyDef.position.Set( m_gameWorld->getWindow()->getSize().x / 2.f,
+								  m_gameWorld->getWindow()->getSize().y - width / 2.f );
+		break;
+	default:
+		break;
+	}
+
+	m_physicalBody = m_gameWorld->getPhysicalWorld()->CreateBody( &wallBodyDef );
+
 	b2PolygonShape wallShape;
 
 	switch( m_orientation )
 	{
 	case Orientation::HORIZONTAL:
-		wallShape.SetAsBox( m_gameWorld->getWindow()->getSize().x / 2, 40.0f );
+		wallShape.SetAsBox( m_gameWorld->getWindow()->getSize().x / 2, width / 2.f );
 		break;
 	case Orientation::VERTICAL:
-		wallShape.SetAsBox( 20.0f, m_gameWorld->getWindow()->getSize().y / 2 );
+		wallShape.SetAsBox( width / 2.f, m_gameWorld->getWindow()->getSize().y / 2 );
 		break;
 	}
 
 	m_physicalBody->CreateFixture( &wallShape, 0.0f );
 }
 
-void Wall::calculateWallPosition()
+void Wall::initGfxPart()
 {
+
 	m_graphicalBody			 = std::make_unique< sf::ConvexShape >();
 	sf::ConvexShape* wallGfx = dynamic_cast< sf::ConvexShape* >( m_graphicalBody.get() );
-
 	wallGfx->setPointCount( 4 );
+
 	switch( m_side )
 	{
 	case Side::LEFT:
 		wallGfx->setPoint( 0, sf::Vector2f{ 0.0f, 0.0f } );
 		wallGfx->setPoint( 1, sf::Vector2f{ 0.0f, ( float )m_gameWorld->getWindow()->getSize().y } );
-		wallGfx->setPoint( 2, sf::Vector2f{ 40.0f, ( float )m_gameWorld->getWindow()->getSize().y } );
-		wallGfx->setPoint( 3, sf::Vector2f{ 40.0f, 0.0f } );
+		wallGfx->setPoint( 2, sf::Vector2f{ width, ( float )m_gameWorld->getWindow()->getSize().y } );
+		wallGfx->setPoint( 3, sf::Vector2f{ width, 0.0f } );
 		break;
 	case Side::RIGHT:
-		wallGfx->setPoint( 0, sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x - 40.0f, 0.0f } );
+		wallGfx->setPoint( 0, sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x - width, 0.0f } );
 		wallGfx->setPoint( 1,
-						   sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x - 40.0f,
+						   sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x - width,
 										 ( float )m_gameWorld->getWindow()->getSize().y } );
 		wallGfx->setPoint( 2,
 						   sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x,
@@ -102,23 +112,24 @@ void Wall::calculateWallPosition()
 		break;
 	case Side::UP:
 		wallGfx->setPoint( 0, sf::Vector2f{ 0.0f, 0.0f } );
-		wallGfx->setPoint( 1, sf::Vector2f{ 0.0f, 40.0f } );
-		wallGfx->setPoint( 2, sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x, 40.0f } );
+		wallGfx->setPoint( 1, sf::Vector2f{ 0.0f, width } );
+		wallGfx->setPoint( 2, sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x, width } );
 		wallGfx->setPoint( 3, sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x, 0.0f } );
 		break;
 	case Side::DOWN:
-		wallGfx->setPoint( 0, sf::Vector2f{ 0.0f, ( float )m_gameWorld->getWindow()->getSize().y - 40.0f } );
+		wallGfx->setPoint( 0, sf::Vector2f{ 0.0f, ( float )m_gameWorld->getWindow()->getSize().y - width } );
 		wallGfx->setPoint( 1, sf::Vector2f{ 0.0f, ( float )m_gameWorld->getWindow()->getSize().y } );
 		wallGfx->setPoint( 2,
 						   sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x,
 										 ( float )m_gameWorld->getWindow()->getSize().y } );
 		wallGfx->setPoint( 3,
 						   sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x,
-										 ( float )m_gameWorld->getWindow()->getSize().y - 40.0f } );
+										 ( float )m_gameWorld->getWindow()->getSize().y - width } );
 		break;
 	default:
 		break;
 	}
+	m_graphicalBody->setFillColor( sf::Color::Blue );
 }
 
 void Wall::wrapScreenPosition() {}

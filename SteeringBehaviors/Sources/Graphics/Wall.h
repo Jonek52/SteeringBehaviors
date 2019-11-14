@@ -42,12 +42,16 @@ public:
 	virtual void wrapScreenPosition() override;
 
 private:
+	virtual void initPhysicalPart() override;
+	virtual void initGfxPart() override;
 	void calculateWallSize();
 	void calculateWallPosition();
 
 private:
 	Orientation m_orientation;
 	Side m_side;
+
+	inline static constexpr float width = 10.0f;
 };
 } // namespace Graphics
 

@@ -30,6 +30,9 @@ public:
 	virtual void processEvents( sf::Event& event ) override;
 
 protected:
+	virtual void initGfxPart() override;
+	virtual void initPhysicalPart() override;
+
 	virtual void wrapScreenPosition() override;
 	virtual void handleKeyboard();
 	virtual void handleMouse();

@@ -31,6 +31,9 @@ public:
 	virtual void teardown() = 0;
 
 protected:
+	virtual void initGfxPart()		= 0;
+	virtual void initPhysicalPart() = 0;
+
 	virtual void wrapScreenPosition() = 0;
 
 protected:
