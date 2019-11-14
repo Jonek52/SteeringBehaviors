@@ -1,4 +1,5 @@
 #include <SFML\Graphics\ConvexShape.hpp>
+#include <SFML\Graphics\CircleShape.hpp>
 #include <SFML\Graphics.hpp>
 #include <SFML\System\Vector2.hpp>
 
@@ -6,10 +7,15 @@
 #include "Box2D\Collision\Shapes\b2PolygonShape.h"
 #include "Box2D\Dynamics\b2World.h"
 #include "Box2D\Dynamics\b2Fixture.h"
+#include "SFML\Graphics\Vertex.hpp"
+#include "Box2D\Collision\Shapes\b2CircleShape.h"
 
 #include "GameWorld.h"
 #include "Player.h"
 #include "../Math/MathFunctions.h"
+
+#include <iostream>
+
 namespace SteeringBehaviors
 {
 namespace Graphics
@@ -28,22 +34,80 @@ void Player::init()
 	initGfxPart();
 	initPhysicalPart();
 	m_graphicalBody->setPosition( Math::toSFMLVector( m_physicalBody->GetPosition() ) );
+
+	m_ball.graphicalBody = std::make_unique< sf::CircleShape >( 10.0f, 12 );
+	m_ball.graphicalBody->setFillColor( sf::Color::Green );
+	m_ball.graphicalBody->setPosition( Math::toSFMLVector( m_physicalBody->GetPosition() ) );
+
+	b2BodyDef ballDef;
+	ballDef.type = b2_dynamicBody;
+	ballDef.position.Set( 400.f, 300.f );
+	m_ball.physicalBody = m_gameWorld->getPhysicalWorld()->CreateBody( &ballDef );
+
+	b2CircleShape physicalBody;
+	physicalBody.m_radius = 10.0f;
+
+	m_ball.physicalBody->CreateFixture( &physicalBody, 0.0f );
 }
 
 void Player::teardown() {}
 
-void Player::update()
+void Player::update( std::chrono::milliseconds delta )
 {
 
 	applyForce();
+	handleShooting( delta );
 	// wrapScreenPosition();
 	rotate();
+}
+
+void Player::handleShooting( std::chrono::milliseconds delta )
+{
+	if( wantsToShoot )
+	{
+		if( onCooldown )
+		{
+			wantsToShoot = false;
+			wait();
+		}
+		else
+		{
+			m_counter  = std::chrono::steady_clock::now();
+			onCooldown = true;
+			m_drawLine = true;
+			shootBall();
+		}
+	}
+}
+
+void Player::shootBall()
+{
+
+	Vec forceApplied = m_targetDirection;
+	forceApplied.Normalize();
+
+	forceApplied *= m_ball.forceApplied;
+	m_ball.physicalBody->ApplyLinearImpulseToCenter( forceApplied, true );
+}
+
+void Player::wait()
+{
+	auto now	 = std::chrono::steady_clock::now();
+	auto elapsed = std::chrono::duration_cast< std::chrono::milliseconds >( now - m_counter );
+
+	if( elapsed >= std::chrono::milliseconds( 1500 ) )
+	{
+		onCooldown = false;
+	}
 }
 
 void Player::render( RenderWindow* window )
 {
 	m_graphicalBody->setPosition( Math::toSFMLVector( m_physicalBody->GetPosition() ) );
 	window->draw( *m_graphicalBody );
+
+	m_ball.graphicalBody->setPosition( Math::toSFMLVector( m_ball.physicalBody->GetPosition() ) );
+	window->draw( *m_ball.graphicalBody );
 }
 
 void Player::move( float deltaTime )
@@ -87,7 +151,16 @@ void Player::processInput()
 	handleMouse();
 }
 
-void Player::processEvents( sf::Event& event ) {}
+void Player::processEvents( sf::Event& event )
+{
+	if( event.type == sf::Event::KeyPressed )
+	{
+		if( event.key.code == sf::Keyboard::Space )
+		{
+			wantsToShoot = true;
+		}
+	}
+}
 
 void Player::handleKeyboard()
 {
@@ -116,13 +189,14 @@ void Player::handleKeyboard()
 void Player::handleMouse()
 {
 	sf::Vector2i mousePosition = sf::Mouse::getPosition( *m_gameWorld->getWindow() );
-	Vec b2mousePosition		   = Math::toBox2DVector( mousePosition );
-	m_targetDirection		   = b2mousePosition - m_physicalBody->GetPosition();
-	m_targetDirection.Normalize();
+	m_mousePosition			   = Math::toBox2DVector( mousePosition );
 }
 
 void Player::rotate()
 {
+	m_targetDirection = m_mousePosition - m_physicalBody->GetPosition();
+	m_targetDirection.Normalize();
+
 	float cos				   = m_lookDirection.x * m_targetDirection.x + m_lookDirection.y * m_targetDirection.y;
 	float sin				   = m_lookDirection.x * m_targetDirection.y - m_lookDirection.y * m_targetDirection.x;
 	float rotationAngle		   = atan2( sin, cos );
@@ -140,7 +214,7 @@ void Player::initGfxPart()
 {
 	m_graphicalBody = std::make_unique< sf::ConvexShape >();
 	m_graphicalBody->setFillColor( sf::Color::Green );
-	sf::ConvexShape* playerGfx = dynamic_cast< sf::ConvexShape* >( m_graphicalBody.get() );
+	auto* playerGfx = dynamic_cast< sf::ConvexShape* >( m_graphicalBody.get() );
 
 	playerGfx->setPointCount( 3 );
 

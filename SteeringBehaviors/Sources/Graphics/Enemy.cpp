@@ -33,7 +33,7 @@ void Enemy::init()
 
 void Enemy::teardown() {}
 
-void Enemy::update() {}
+void Enemy::update( std::chrono::milliseconds delta ) {}
 
 void Enemy::render( RenderWindow* window )
 {
@@ -49,7 +49,7 @@ void Enemy::initGfxPart()
 {
 	m_graphicalBody = std::make_unique< sf::ConvexShape >();
 	m_graphicalBody->setFillColor( sf::Color::Red );
-	sf::ConvexShape* enemyGfx = dynamic_cast< sf::ConvexShape* >( m_graphicalBody.get() );
+	auto* enemyGfx = dynamic_cast< sf::ConvexShape* >( m_graphicalBody.get() );
 
 	enemyGfx->setPointCount( 3 );
 

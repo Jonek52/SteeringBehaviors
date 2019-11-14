@@ -1,5 +1,7 @@
 #pragma once
 
+#include <chrono>
+
 namespace SteeringBehaviors
 {
 namespace Graphics
@@ -8,7 +10,7 @@ class Updatable
 {
 public:
 	virtual ~Updatable()  = default;
-	virtual void update() = 0;
+	virtual void update(std::chrono::milliseconds delta) = 0;
 };
 
 } // namespace Graphics

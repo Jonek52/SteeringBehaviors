@@ -53,11 +53,11 @@ void GameWorld::render( sf::RenderWindow* window )
 	}
 }
 
-void GameWorld::update()
+void GameWorld::update( std::chrono::milliseconds delta )
 {
 	for( const auto& gameEntity : m_gameEntities )
 	{
-		gameEntity->update();
+		gameEntity->update( delta );
 	}
 }
 
