@@ -29,7 +29,7 @@ public:
 	};
 
 public:
-	Wall( GameWorld* gameWorld, float maxSpeed, const Vec& position, Orientation orientation, Side side );
+	Wall( GameWorld* gameWorld, float maxSpeed, Orientation orientation, Side side );
 	~Wall();
 
 	virtual void init() override;

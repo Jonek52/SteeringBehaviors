@@ -14,18 +14,19 @@ namespace SteeringBehaviors
 {
 namespace Graphics
 {
-Player::Player( GameWorld* gameWorld, float maxSpeed, const Vec& position ) : GameEntity( gameWorld, maxSpeed )
+Player::Player( GameWorld* gameWorld, float maxSpeed ) : GameEntity( gameWorld, maxSpeed )
+{
+	init();
+}
+Player::~Player() = default;
+
+void Player::init()
 {
 	b2BodyDef playerBodyDef;
 	playerBodyDef.type = b2_dynamicBody;
 	playerBodyDef.position.Set( 400.0f, 300.0f );
 	m_physicalBody = m_gameWorld->getPhysicalWorld()->CreateBody( &playerBodyDef );
-}
 
-Player::~Player() = default;
-
-void Player::init()
-{
 	m_graphicalBody = std::make_unique< sf::ConvexShape >();
 	m_graphicalBody->setFillColor( sf::Color::Green );
 	sf::ConvexShape* playerGfx = dynamic_cast< sf::ConvexShape* >( m_graphicalBody.get() );

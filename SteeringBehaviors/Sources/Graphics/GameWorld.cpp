@@ -23,16 +23,12 @@ GameWorld::GameWorld( sf::Window* window )
 
 void GameWorld::init()
 {
-	auto player = std::make_unique< Player >( this, 50.0f, b2Vec2{ 400.f, 300.f } );
+	auto player = std::make_unique< Player >( this, 50.0f );
 	m_gameEntities.emplace_back( std::move( player ) );
 
-	auto leftWall = std::make_unique< Wall >( this,
-											  0.0f,
-											  b2Vec2{ 20.0f, static_cast< float >( m_mainWindow->getSize().y / 2 ) },
-											  Wall::Orientation::VERTICAL,
-											  Wall::Side::LEFT );
+	auto leftWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::VERTICAL, Wall::Side::LEFT );
 	m_gameEntities.emplace_back( std::move( leftWall ) );
-	initGameEntities();
+	// initGameEntities();
 }
 
 void GameWorld::teardown() {}

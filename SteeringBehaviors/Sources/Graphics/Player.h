@@ -18,7 +18,7 @@ class GameWorld;
 class Player : public GameEntity
 {
 public:
-	Player( GameWorld* gameWorld, float maxSpeed, const Vec& position );
+	Player( GameWorld* gameWorld, float maxSpeed );
 	virtual ~Player();
 
 	virtual void init() override;

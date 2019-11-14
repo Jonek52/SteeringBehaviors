@@ -16,19 +16,21 @@ namespace SteeringBehaviors
 {
 namespace Graphics
 {
-Wall::Wall( GameWorld* gameWorld, float maxSpeed, const Vec& position, Orientation orientation, Side side )
+Wall::Wall( GameWorld* gameWorld, float maxSpeed, Orientation orientation, Side side )
 	: GameEntity{ gameWorld, maxSpeed }, m_orientation{ orientation }, m_side{ side }
 {
-	b2BodyDef wallBodyDef;
-	wallBodyDef.type	 = b2_staticBody;
-	wallBodyDef.position = position;
-	m_physicalBody		 = m_gameWorld->getPhysicalWorld()->CreateBody( &wallBodyDef );
+	init();
 }
 
 Wall::~Wall() = default;
 
 void Wall::init()
 {
+	b2BodyDef wallBodyDef;
+	wallBodyDef.type = b2_staticBody;
+	wallBodyDef.position.Set( 20.0f, static_cast< float >( m_gameWorld->getWindow()->getSize().y / 2 ) );
+	m_physicalBody = m_gameWorld->getPhysicalWorld()->CreateBody( &wallBodyDef );
+
 	calculateWallPosition();
 	calculateWallSize();
 
