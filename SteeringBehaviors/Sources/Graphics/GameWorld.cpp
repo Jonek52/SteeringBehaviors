@@ -9,6 +9,7 @@
 #include "SFML\Window\Window.hpp"
 #include "GameWorld.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "Wall.h"
 
 namespace SteeringBehaviors
@@ -37,6 +38,9 @@ void GameWorld::init()
 
 	auto downWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::HORIZONTAL, Wall::Side::DOWN );
 	m_gameEntities.push_back( std::move( downWall ) );
+
+	auto enemy = std::make_unique< Enemy >( this, 50.0f );
+	m_gameEntities.push_back( std::move( enemy ) );
 }
 
 void GameWorld::teardown() {}

@@ -190,6 +190,7 @@
     <ClCompile Include="Box2D\Dynamics\Joints\b2WheelJoint.cpp" />
     <ClCompile Include="Box2D\Rope\b2Rope.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Sources\Graphics\Enemy.cpp" />
     <ClCompile Include="Sources\Graphics\Game.cpp" />
     <ClCompile Include="Sources\Graphics\GameEntity.cpp" />
     <ClCompile Include="Sources\Graphics\GameWorld.cpp" />
@@ -244,6 +245,7 @@
     <ClInclude Include="Box2D\Dynamics\Joints\b2WeldJoint.h" />
     <ClInclude Include="Box2D\Dynamics\Joints\b2WheelJoint.h" />
     <ClInclude Include="Box2D\Rope\b2Rope.h" />
+    <ClInclude Include="Sources\Graphics\Enemy.h" />
     <ClInclude Include="Sources\Graphics\Game.h" />
     <ClInclude Include="Sources\Graphics\GameEntity.h" />
     <ClInclude Include="Sources\Graphics\GameWorld.h" />

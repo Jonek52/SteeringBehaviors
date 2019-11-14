@@ -9,7 +9,6 @@
 #include "GameWorld.h"
 #include "Player.h"
 #include "../Math/MathFunctions.h"
-#include <iostream>
 namespace SteeringBehaviors
 {
 namespace Graphics
