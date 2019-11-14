@@ -5,6 +5,7 @@
 #include "Box2D\Dynamics\b2Body.h"
 #include "Box2D\Collision\Shapes\b2PolygonShape.h"
 #include "Box2D\Dynamics\b2World.h"
+#include "Box2D\Dynamics\b2Fixture.h"
 
 #include "Enemy.h"
 #include "GameWorld.h"
@@ -15,7 +16,8 @@ namespace SteeringBehaviors
 namespace Graphics
 {
 
-Enemy::Enemy( GameWorld* gameWorld, float maxSpeed ) : GameEntity( gameWorld, maxSpeed )
+Enemy::Enemy( GameWorld* gameWorld, float maxSpeed )
+	: GameEntity{ gameWorld, maxSpeed, GameWorld::ENEMY, GameWorld::OBSTACLE | GameWorld::PLAYER }
 {
 	init();
 }
@@ -74,10 +76,10 @@ void Enemy::initGfxPart()
 
 void Enemy::initPhysicalPart()
 {
-	b2BodyDef playerBodyDef;
-	playerBodyDef.type = b2_staticBody;
-	playerBodyDef.position.Set( 600.f, 600.0f );
-	m_physicalBody = m_gameWorld->getPhysicalWorld()->CreateBody( &playerBodyDef );
+	b2BodyDef enemyBodyDef;
+	enemyBodyDef.type = b2_staticBody;
+	enemyBodyDef.position.Set( 600.f, 600.0f );
+	m_physicalBody = m_gameWorld->getPhysicalWorld()->CreateBody( &enemyBodyDef );
 
 	b2PolygonShape enemyShape;
 	Vec enemyShapePoints[ 3 ];
@@ -89,7 +91,14 @@ void Enemy::initPhysicalPart()
 	}
 
 	enemyShape.Set( enemyShapePoints, 3 );
-	m_physicalBody->CreateFixture( &enemyShape, 0.0f );
+
+	b2FixtureDef fixture;
+	fixture.filter.categoryBits = m_collisionCategory;
+	fixture.filter.maskBits		= m_collisionMask;
+	fixture.density				= 0.0f;
+	fixture.shape				= &enemyShape;
+
+	m_physicalBody->CreateFixture( &fixture );
 }
 
 void Enemy::wrapScreenPosition() {}

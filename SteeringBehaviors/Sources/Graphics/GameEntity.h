@@ -25,7 +25,7 @@ protected:
 	using Vec = b2Vec2;
 
 public:
-	explicit GameEntity( GameWorld* gameWorld, float maxSpeed );
+	explicit GameEntity( GameWorld* gameWorld, float maxForceValue, uint16 collisionCategory, uint16 collisionMask );
 	virtual ~GameEntity();
 	virtual void init()		= 0;
 	virtual void teardown() = 0;
@@ -45,6 +45,9 @@ protected:
 	Vec m_sideDirection;
 
 	const float m_maxForceValue;
+
+	const uint16 m_collisionCategory;
+	const uint16 m_collisionMask;
 };
 
 } // namespace Graphics

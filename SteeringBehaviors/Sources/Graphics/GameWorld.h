@@ -18,6 +18,13 @@ namespace Graphics
 class GameWorld : public Updatable, public Renderable, public Input::InputHandling
 {
 public:
+	enum CollisionCategory : uint16
+	{
+		PLAYER	 = 0x0001,
+		ENEMY	 = 0x0002,
+		OBSTACLE = 0x0004
+	};
+
 	explicit GameWorld( sf::Window* window );
 	~GameWorld() = default;
 

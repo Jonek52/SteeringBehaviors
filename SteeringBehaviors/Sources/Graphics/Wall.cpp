@@ -6,6 +6,7 @@
 #include "SFML\Graphics\ConvexShape.hpp"
 #include "SFML\System\Vector2.hpp"
 #include "SFML\Graphics\RenderWindow.hpp"
+#include "Box2D\Dynamics\b2Fixture.h"
 
 #include "Wall.h"
 #include "GameWorld.h"
@@ -17,7 +18,9 @@ namespace SteeringBehaviors
 namespace Graphics
 {
 Wall::Wall( GameWorld* gameWorld, float maxSpeed, Orientation orientation, Side side )
-	: GameEntity{ gameWorld, maxSpeed }, m_orientation{ orientation }, m_side{ side }
+	: GameEntity{ gameWorld, maxSpeed, GameWorld::OBSTACLE, GameWorld::PLAYER | GameWorld::ENEMY },
+	  m_orientation{ orientation },
+	  m_side{ side }
 {
 	init();
 }
@@ -82,7 +85,13 @@ void Wall::initPhysicalPart()
 		break;
 	}
 
-	m_physicalBody->CreateFixture( &wallShape, 0.0f );
+	b2FixtureDef fixture;
+	fixture.filter.categoryBits = m_collisionCategory;
+	fixture.filter.maskBits		= m_collisionMask;
+	fixture.density				= 0.0f;
+	fixture.shape				= &wallShape;
+
+	m_physicalBody->CreateFixture( &fixture );
 }
 
 void Wall::initGfxPart()

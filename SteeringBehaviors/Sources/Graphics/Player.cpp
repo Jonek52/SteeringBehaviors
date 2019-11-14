@@ -5,6 +5,7 @@
 #include "Box2D\Dynamics\b2Body.h"
 #include "Box2D\Collision\Shapes\b2PolygonShape.h"
 #include "Box2D\Dynamics\b2World.h"
+#include "Box2D\Dynamics\b2Fixture.h"
 
 #include "GameWorld.h"
 #include "Player.h"
@@ -13,7 +14,8 @@ namespace SteeringBehaviors
 {
 namespace Graphics
 {
-Player::Player( GameWorld* gameWorld, float maxSpeed ) : GameEntity( gameWorld, maxSpeed )
+Player::Player( GameWorld* gameWorld, float maxSpeed )
+	: GameEntity{ gameWorld, maxSpeed, GameWorld::PLAYER, GameWorld::OBSTACLE }
 {
 	init();
 }
@@ -181,7 +183,14 @@ void Player::initPhysicalPart()
 	}
 
 	playerShape.Set( playerShapePoints, 3 );
-	m_physicalBody->CreateFixture( &playerShape, 0.0f );
+
+	b2FixtureDef fixture;
+	fixture.filter.categoryBits = m_collisionCategory;
+	fixture.filter.maskBits		= m_collisionMask;
+	fixture.density				= 0.0f;
+	fixture.shape				= &playerShape;
+
+	m_physicalBody->CreateFixture( &fixture );
 }
 
 void Player::wrapScreenPosition()

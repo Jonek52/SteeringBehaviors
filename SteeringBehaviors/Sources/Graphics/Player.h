@@ -46,6 +46,7 @@ private:
 	bool m_moveRight{ false };
 	bool m_moveLeft{ false };
 	Vec m_targetDirection;
+
 };
 
 } // namespace Graphics
