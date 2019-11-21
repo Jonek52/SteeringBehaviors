@@ -21,7 +21,7 @@ namespace SteeringBehaviors
 namespace Graphics
 {
 Player::Player( GameWorld* gameWorld, float maxSpeed )
-	: GameEntity{ gameWorld, maxSpeed, GameWorld::PLAYER, GameWorld::OBSTACLE }
+	: GameEntity{ gameWorld, maxSpeed, GameWorld::PLAYER, GameWorld::OBSTACLE | GameWorld::ENEMY }
 {
 	init();
 }
@@ -34,20 +34,6 @@ void Player::init()
 	initGfxPart();
 	initPhysicalPart();
 	m_graphicalBody->setPosition( Math::toSFMLVector( m_physicalBody->GetPosition() ) );
-
-	m_ball.graphicalBody = std::make_unique< sf::CircleShape >( 10.0f, 12 );
-	m_ball.graphicalBody->setFillColor( sf::Color::Green );
-	m_ball.graphicalBody->setPosition( Math::toSFMLVector( m_physicalBody->GetPosition() ) );
-
-	b2BodyDef ballDef;
-	ballDef.type = b2_dynamicBody;
-	ballDef.position.Set( 400.f, 300.f );
-	m_ball.physicalBody = m_gameWorld->getPhysicalWorld()->CreateBody( &ballDef );
-
-	b2CircleShape physicalBody;
-	physicalBody.m_radius = 10.0f;
-
-	m_ball.physicalBody->CreateFixture( &physicalBody, 0.0f );
 }
 
 void Player::teardown() {}
@@ -57,7 +43,6 @@ void Player::update( std::chrono::milliseconds delta )
 
 	applyForce();
 	handleShooting( delta );
-	// wrapScreenPosition();
 	rotate();
 }
 
@@ -82,12 +67,48 @@ void Player::handleShooting( std::chrono::milliseconds delta )
 
 void Player::shootBall()
 {
+	spawnBall();
 
 	Vec forceApplied = m_targetDirection;
 	forceApplied.Normalize();
 
 	forceApplied *= m_ball.forceApplied;
 	m_ball.physicalBody->ApplyLinearImpulseToCenter( forceApplied, true );
+}
+
+void Player::spawnBall()
+{
+
+	b2BodyDef ballDef;
+	ballDef.type = b2_dynamicBody;
+	ballDef.position.Set( m_physicalBody->GetPosition().x, m_physicalBody->GetPosition().y );
+	m_ball.physicalBody = m_gameWorld->getPhysicalWorld()->CreateBody( &ballDef );
+
+	b2CircleShape ballShape;
+	ballShape.m_radius = m_ball.radius;
+
+	b2FixtureDef fixture;
+	fixture.filter.categoryBits = GameWorld::BALL;
+	fixture.filter.maskBits		= GameWorld::ENEMY | GameWorld::OBSTACLE;
+	fixture.density				= 0.0f;
+	fixture.shape				= &ballShape;
+
+	m_ball.physicalBody->CreateFixture( &fixture );
+	m_ball.physicalBody->SetUserData( ( void* )GameWorld::CollisionCategory::BALL );
+
+	m_ball.graphicalBody = std::make_unique< sf::CircleShape >( m_ball.radius, 12 );
+
+	sf::Vector2f origin{ 0.f, 0.f };
+	for( int i = 0; i < m_ball.graphicalBody->getPointCount(); ++i )
+	{
+		origin += m_ball.graphicalBody->getPoint( i );
+	}
+
+	origin /= static_cast< float >( m_ball.graphicalBody->getPointCount() );
+
+	m_ball.graphicalBody->setOrigin( origin );
+	m_ball.graphicalBody->setPosition( Math::toSFMLVector( m_ball.physicalBody->GetPosition() ) );
+	m_ball.graphicalBody->setFillColor( sf::Color::Yellow );
 }
 
 void Player::wait()
@@ -106,8 +127,11 @@ void Player::render( RenderWindow* window )
 	m_graphicalBody->setPosition( Math::toSFMLVector( m_physicalBody->GetPosition() ) );
 	window->draw( *m_graphicalBody );
 
-	m_ball.graphicalBody->setPosition( Math::toSFMLVector( m_ball.physicalBody->GetPosition() ) );
-	window->draw( *m_ball.graphicalBody );
+	if( m_ball.graphicalBody )
+	{
+		m_ball.graphicalBody->setPosition( Math::toSFMLVector( m_ball.physicalBody->GetPosition() ) );
+		window->draw( *m_ball.graphicalBody );
+	}
 }
 
 void Player::move( float deltaTime )
@@ -265,6 +289,7 @@ void Player::initPhysicalPart()
 	fixture.shape				= &playerShape;
 
 	m_physicalBody->CreateFixture( &fixture );
+	m_physicalBody->SetUserData( ( void* )GameWorld::CollisionCategory::PLAYER );
 }
 
 void Player::wrapScreenPosition()

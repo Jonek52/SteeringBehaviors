@@ -18,7 +18,7 @@ namespace SteeringBehaviors
 namespace Graphics
 {
 Wall::Wall( GameWorld* gameWorld, float maxSpeed, Orientation orientation, Side side )
-	: GameEntity{ gameWorld, maxSpeed, GameWorld::OBSTACLE, GameWorld::PLAYER | GameWorld::ENEMY },
+	: GameEntity{ gameWorld, maxSpeed, GameWorld::OBSTACLE, GameWorld::PLAYER | GameWorld::ENEMY | GameWorld::BALL },
 	  m_orientation{ orientation },
 	  m_side{ side }
 {
@@ -41,8 +41,7 @@ void Wall::render( RenderWindow* window )
 	window->draw( *m_graphicalBody );
 }
 
-void Wall::update(std::chrono::milliseconds delta)
-{}
+void Wall::update( std::chrono::milliseconds delta ) {}
 
 void Wall::processInput() {}
 void Wall::processEvents( sf::Event& event ) {}

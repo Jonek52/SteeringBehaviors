@@ -17,7 +17,7 @@ namespace Graphics
 {
 
 Enemy::Enemy( GameWorld* gameWorld, float maxSpeed )
-	: GameEntity{ gameWorld, maxSpeed, GameWorld::ENEMY, GameWorld::OBSTACLE | GameWorld::PLAYER }
+	: GameEntity{ gameWorld, maxSpeed, GameWorld::ENEMY, GameWorld::OBSTACLE | GameWorld::PLAYER | GameWorld::BALL }
 {
 	init();
 }
@@ -99,6 +99,7 @@ void Enemy::initPhysicalPart()
 	fixture.shape				= &enemyShape;
 
 	m_physicalBody->CreateFixture( &fixture );
+	m_physicalBody->SetUserData( ( void* )GameWorld::CollisionCategory::ENEMY );
 }
 
 void Enemy::wrapScreenPosition() {}

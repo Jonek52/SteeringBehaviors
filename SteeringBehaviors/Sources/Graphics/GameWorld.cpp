@@ -20,6 +20,7 @@ namespace Graphics
 GameWorld::GameWorld( sf::Window* window )
 	: m_mainWindow{ window }, m_world{ std::make_unique< b2World >( b2Vec2{ 0.0f, 0.0f } ) }
 {
+	m_world->SetContactListener( &m_contactListener );
 }
 
 void GameWorld::init()

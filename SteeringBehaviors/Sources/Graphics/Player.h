@@ -6,10 +6,12 @@
 #include "chrono"
 #include <array>
 
+#include "SFML/Graphics/Vertex.hpp"
+
 namespace sf
 {
 class Shape;
-class Vertex;
+class CircleShape;
 } // namespace sf
 
 namespace SteeringBehaviors
@@ -20,6 +22,14 @@ class GameWorld;
 class Player : public GameEntity
 {
 public:
+	struct Ball
+	{
+		std::unique_ptr< sf::CircleShape > graphicalBody;
+		b2Body* physicalBody;
+		const float radius{ 15.0f };
+		float forceApplied{ 100.0f };
+	};
+
 	Player( GameWorld* gameWorld, float maxSpeed );
 	virtual ~Player();
 
@@ -44,6 +54,7 @@ protected:
 
 	virtual void applyForce();
 	virtual void shootBall();
+	virtual void spawnBall();
 
 private:
 	void wait();
@@ -64,13 +75,7 @@ private:
 	std::array< sf::Vertex, 2 > m_line;
 
 	std::chrono::steady_clock::time_point m_counter;
-
-	struct Ball
-	{
-		std::unique_ptr< sf::CircleShape > graphicalBody;
-		b2Body* physicalBody;
-		float forceApplied{ 60.0f };
-	} m_ball;
+	Ball m_ball;
 };
 
 } // namespace Graphics

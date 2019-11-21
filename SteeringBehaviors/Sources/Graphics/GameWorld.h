@@ -1,5 +1,6 @@
 #pragma once
 #include "GameEntity.h"
+#include "ContactListener.h"
 
 #include <vector>
 #include <memory>
@@ -22,7 +23,8 @@ public:
 	{
 		PLAYER	 = 0x0001,
 		ENEMY	 = 0x0002,
-		OBSTACLE = 0x0004
+		OBSTACLE = 0x0004,
+		BALL	 = 0x0008
 	};
 
 	explicit GameWorld( sf::Window* window );
@@ -31,7 +33,7 @@ public:
 	virtual void init();
 	virtual void teardown();
 	virtual void render( sf::RenderWindow* window ) override;
-	virtual void update(std::chrono::milliseconds delta) override;
+	virtual void update( std::chrono::milliseconds delta ) override;
 	virtual void step( float deltaTime );
 	virtual void processInput() override;
 	virtual void processEvents( sf::Event& event ) override;
@@ -45,6 +47,7 @@ private:
 	sf::Window* m_mainWindow;
 	std::shared_ptr< b2World > m_world;
 	std::vector< std::unique_ptr< GameEntity > > m_gameEntities;
+	ContactListener m_contactListener;
 };
 
 } // namespace Graphics
