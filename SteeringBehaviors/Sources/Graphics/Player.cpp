@@ -3,12 +3,7 @@
 #include <SFML\Graphics.hpp>
 #include <SFML\System\Vector2.hpp>
 
-#include "Box2D\Dynamics\b2Body.h"
-#include "Box2D\Collision\Shapes\b2PolygonShape.h"
-#include "Box2D\Dynamics\b2World.h"
-#include "Box2D\Dynamics\b2Fixture.h"
 #include "SFML\Graphics\Vertex.hpp"
-#include "Box2D\Collision\Shapes\b2CircleShape.h"
 
 #include "GameWorld.h"
 #include "Player.h"
@@ -20,8 +15,7 @@ namespace SteeringBehaviors
 {
 namespace Graphics
 {
-Player::Player( GameWorld* gameWorld, float maxSpeed )
-	: GameEntity{ gameWorld, maxSpeed, GameWorld::PLAYER, GameWorld::OBSTACLE | GameWorld::ENEMY }
+Player::Player( GameWorld* gameWorld, float maxSpeed ) : GameEntity{ gameWorld, maxSpeed }
 {
 	init();
 }
@@ -33,7 +27,6 @@ void Player::init()
 
 	initGfxPart();
 	initPhysicalPart();
-	m_graphicalBody->setPosition( Math::toSFMLVector( m_physicalBody->GetPosition() ) );
 }
 
 void Player::teardown() {}
@@ -68,34 +61,10 @@ void Player::handleShooting( std::chrono::milliseconds delta )
 void Player::shootBall()
 {
 	spawnBall();
-
-	Vec forceApplied = m_targetDirection;
-	forceApplied.Normalize();
-
-	forceApplied *= m_ball.forceApplied;
-	m_ball.physicalBody->ApplyLinearImpulseToCenter( forceApplied, true );
 }
 
 void Player::spawnBall()
 {
-
-	b2BodyDef ballDef;
-	ballDef.type = b2_dynamicBody;
-	ballDef.position.Set( m_physicalBody->GetPosition().x, m_physicalBody->GetPosition().y );
-	m_ball.physicalBody = m_gameWorld->getPhysicalWorld()->CreateBody( &ballDef );
-
-	b2CircleShape ballShape;
-	ballShape.m_radius = m_ball.radius;
-
-	b2FixtureDef fixture;
-	fixture.filter.categoryBits = GameWorld::BALL;
-	fixture.filter.maskBits		= GameWorld::ENEMY | GameWorld::OBSTACLE;
-	fixture.density				= 0.0f;
-	fixture.shape				= &ballShape;
-
-	m_ball.physicalBody->CreateFixture( &fixture );
-	m_ball.physicalBody->SetUserData( ( void* )GameWorld::CollisionCategory::BALL );
-
 	m_ball.graphicalBody = std::make_unique< sf::CircleShape >( m_ball.radius, 12 );
 
 	sf::Vector2f origin{ 0.f, 0.f };
@@ -107,7 +76,6 @@ void Player::spawnBall()
 	origin /= static_cast< float >( m_ball.graphicalBody->getPointCount() );
 
 	m_ball.graphicalBody->setOrigin( origin );
-	m_ball.graphicalBody->setPosition( Math::toSFMLVector( m_ball.physicalBody->GetPosition() ) );
 	m_ball.graphicalBody->setFillColor( sf::Color::Yellow );
 }
 
@@ -124,49 +92,29 @@ void Player::wait()
 
 void Player::render( RenderWindow* window )
 {
-	m_graphicalBody->setPosition( Math::toSFMLVector( m_physicalBody->GetPosition() ) );
 	window->draw( *m_graphicalBody );
 
 	if( m_ball.graphicalBody )
 	{
-		m_ball.graphicalBody->setPosition( Math::toSFMLVector( m_ball.physicalBody->GetPosition() ) );
 		window->draw( *m_ball.graphicalBody );
 	}
 }
 
-void Player::move( float deltaTime )
-{
-	m_physicalBody->SetTransform( m_physicalBody->GetPosition() + m_physicalBody->GetLinearVelocity(),
-								  m_physicalBody->GetAngle() );
-	m_graphicalBody->setPosition( Math::toSFMLVector( m_physicalBody->GetPosition() ) );
-}
+void Player::move( float deltaTime ) {}
 
 void Player::applyForce()
 {
-	m_physicalBody->SetLinearVelocity( Vec{ 0.0f, 0.0f } );
-	Vec force = Vec{ 0.0f, 0.0f };
-	if( m_moveLeft )
-		force += Vec{ -1.0f, 0.0f };
+	// if( m_moveLeft )
 
-	if( m_moveRight )
-		force += Vec{ 1.0f, 0.0f };
+	//	if( m_moveRight )
 
-	if( m_moveLeft && m_moveRight )
-		force += Vec{ 0.0f, 0.0f };
+	//		if( m_moveLeft && m_moveRight )
 
-	if( m_moveUp )
-		force += Vec{ 0.0f, 1.0f };
+	//			if( m_moveUp )
 
-	if( m_moveDown )
-		force += Vec{ 0.0f, -1.0f };
+	//				if( m_moveDown )
 
-	if( m_moveUp && m_moveDown )
-		force += Vec{ 0.0f, 0.0f };
-
-	force.Normalize();
-	force *= m_maxForceValue;
-
-	m_physicalBody->ApplyLinearImpulseToCenter( force, true );
+	//					if( m_moveUp && m_moveDown )
 }
 
 void Player::processInput()
@@ -213,25 +161,12 @@ void Player::handleKeyboard()
 void Player::handleMouse()
 {
 	sf::Vector2i mousePosition = sf::Mouse::getPosition( *m_gameWorld->getWindow() );
-	m_mousePosition			   = Math::toBox2DVector( mousePosition );
 }
 
 void Player::rotate()
 {
-	m_targetDirection = m_mousePosition - m_physicalBody->GetPosition();
-	m_targetDirection.Normalize();
 
-	float cos				   = m_lookDirection.x * m_targetDirection.x + m_lookDirection.y * m_targetDirection.y;
-	float sin				   = m_lookDirection.x * m_targetDirection.y - m_lookDirection.y * m_targetDirection.x;
-	float rotationAngle		   = atan2( sin, cos );
-	float rotationAngleDegrees = Math::toDegrees( rotationAngle );
-
-	m_lookDirection		= m_targetDirection;
-	m_sideDirection		= Vec{ -m_lookDirection.y, m_lookDirection.x };
-	float absoluteAngle = atan2( m_sideDirection.y, m_sideDirection.x );
-
-	m_physicalBody->SetTransform( m_physicalBody->GetWorldCenter(), absoluteAngle );
-	m_graphicalBody->rotate( rotationAngleDegrees );
+	// m_graphicalBody->rotate( rotationAngleDegrees );
 }
 
 void Player::initGfxPart()
@@ -263,34 +198,7 @@ void Player::initGfxPart()
 	m_graphicalBody->setScale( { 0.7f, 0.7f } );
 }
 
-void Player::initPhysicalPart()
-{
-
-	b2BodyDef playerBodyDef;
-	playerBodyDef.type = b2_dynamicBody;
-	playerBodyDef.position.Set( 400.0f, 300.0f );
-	m_physicalBody = m_gameWorld->getPhysicalWorld()->CreateBody( &playerBodyDef );
-
-	b2PolygonShape playerShape;
-	Vec playerShapePoints[ 3 ];
-
-	for( int i = 0; i < 3; ++i )
-	{
-		sf::Vector2f transformed = m_graphicalBody->getTransform().transformPoint( m_graphicalBody->getPoint( i ) );
-		playerShapePoints[ i ]	 = Math::toBox2DVector( transformed );
-	}
-
-	playerShape.Set( playerShapePoints, 3 );
-
-	b2FixtureDef fixture;
-	fixture.filter.categoryBits = m_collisionCategory;
-	fixture.filter.maskBits		= m_collisionMask;
-	fixture.density				= 0.0f;
-	fixture.shape				= &playerShape;
-
-	m_physicalBody->CreateFixture( &fixture );
-	m_physicalBody->SetUserData( ( void* )GameWorld::CollisionCategory::PLAYER );
-}
+void Player::initPhysicalPart() {}
 
 void Player::wrapScreenPosition()
 {
@@ -316,8 +224,6 @@ void Player::wrapScreenPosition()
 	{
 		currentPosY = m_gameWorld->getWindow()->getSize().y - playerShape->getRadius();
 	}
-
-	m_physicalBody->SetTransform( Vec{ currentPosX, currentPosY }, m_physicalBody->GetAngle() );
 }
 
 } // namespace Graphics

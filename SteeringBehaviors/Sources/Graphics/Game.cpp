@@ -39,10 +39,6 @@ void Game::update(std::chrono::milliseconds delta)
 	m_gameWorld->update(delta);
 }
 
-void Game::step( float deltaTime )
-{
-	m_gameWorld->step( deltaTime );
-}
 void Game::processInput()
 {
 	m_gameWorld->processInput();

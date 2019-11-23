@@ -25,7 +25,6 @@ public:
 	struct Ball
 	{
 		std::unique_ptr< sf::CircleShape > graphicalBody;
-		b2Body* physicalBody;
 		const float radius{ 15.0f };
 		float forceApplied{ 100.0f };
 	};
@@ -64,8 +63,6 @@ private:
 	bool m_moveDown{ false };
 	bool m_moveRight{ false };
 	bool m_moveLeft{ false };
-	Vec m_targetDirection;
-	Vec m_mousePosition;
 
 	bool canShoot{ true };
 	bool wantsToShoot{ false };

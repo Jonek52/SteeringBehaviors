@@ -2,7 +2,7 @@
 
 #include "Updatable.h"
 #include "Renderable.h"
-#include "../Input/InputHandling.h"
+#include "..\Input\InputHandling.h"
 
 #include <memory>
 
@@ -34,7 +34,6 @@ public:
 	virtual void teardown();
 	virtual void render( sf::RenderWindow* window ) override;
 	virtual void update(std::chrono::milliseconds delta) override;
-	virtual void step( float deltaTime );
 	virtual void processInput() override;
 	virtual void processEvents( sf::Event& event ) override;
 

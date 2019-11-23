@@ -1,12 +1,6 @@
-#include "Box2D\Common\b2Math.h"
 #include "SFML\Graphics\CircleShape.hpp"
-
-#include "Box2D\Dynamics\b2World.h"
-#include "Box2D\Common\b2Math.h"
-#include "Box2D\Dynamics\b2Body.h"
-#include "Box2D\Collision\Shapes\b2PolygonShape.h"
-
 #include "SFML\Window\Window.hpp"
+
 #include "GameWorld.h"
 #include "Player.h"
 #include "Enemy.h"
@@ -17,10 +11,8 @@ namespace SteeringBehaviors
 namespace Graphics
 {
 
-GameWorld::GameWorld( sf::Window* window )
-	: m_mainWindow{ window }, m_world{ std::make_unique< b2World >( b2Vec2{ 0.0f, 0.0f } ) }
+GameWorld::GameWorld( sf::Window* window ) : m_mainWindow{ window }
 {
-	m_world->SetContactListener( &m_contactListener );
 }
 
 void GameWorld::init()
@@ -62,11 +54,6 @@ void GameWorld::update( std::chrono::milliseconds delta )
 	}
 }
 
-void GameWorld::step( float deltaTime )
-{
-	m_world->Step( deltaTime, 8, 10 );
-}
-
 void GameWorld::initGameEntities()
 {
 	for( const auto& gameEntity : m_gameEntities )
@@ -85,7 +72,6 @@ void GameWorld::processInput()
 
 void GameWorld::processEvents( sf::Event& event )
 {
-
 	for( const auto& gameEntity : m_gameEntities )
 	{
 		gameEntity->processEvents( event );
@@ -96,9 +82,5 @@ sf::Window* GameWorld::getWindow() const
 	return m_mainWindow;
 }
 
-std::shared_ptr< b2World >& GameWorld::getPhysicalWorld()
-{
-	return m_world;
-}
 } // namespace Graphics
 } // namespace SteeringBehaviors

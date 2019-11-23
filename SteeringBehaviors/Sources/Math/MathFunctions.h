@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SFML/System/Vector2.hpp"
-#include "Box2D\Common\b2Math.h"
+
 #include <assert.h>
 
 #define _USE_MATH_DEFINES
@@ -43,15 +43,5 @@ inline float toRadians( float degrees )
 	return degrees * ( static_cast< float >( M_PI ) * inverse180 );
 }
 
-template< typename T >
-b2Vec2 toBox2DVector( sf::Vector2< T > vector )
-{
-	return b2Vec2{ static_cast< float32 >( vector.x ), static_cast< float32 >( vector.y ) };
-}
-
-inline sf::Vector2f toSFMLVector( const b2Vec2& vector )
-{
-	return sf::Vector2f{ vector.x, vector.y };
-}
 } // namespace Math
 } // namespace SteeringBehaviors

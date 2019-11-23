@@ -1,12 +1,7 @@
-#include "Box2D\Dynamics\b2Body.h"
-#include "Box2D\Collision\Shapes\b2PolygonShape.h"
-#include "Box2D\Dynamics\b2World.h"
-
 #include "SFML\Window.hpp"
 #include "SFML\Graphics\ConvexShape.hpp"
 #include "SFML\System\Vector2.hpp"
 #include "SFML\Graphics\RenderWindow.hpp"
-#include "Box2D\Dynamics\b2Fixture.h"
 
 #include "Wall.h"
 #include "GameWorld.h"
@@ -18,7 +13,7 @@ namespace SteeringBehaviors
 namespace Graphics
 {
 Wall::Wall( GameWorld* gameWorld, float maxSpeed, Orientation orientation, Side side )
-	: GameEntity{ gameWorld, maxSpeed, GameWorld::OBSTACLE, GameWorld::PLAYER | GameWorld::ENEMY | GameWorld::BALL },
+	: GameEntity{ gameWorld, maxSpeed},
 	  m_orientation{ orientation },
 	  m_side{ side }
 {
@@ -48,50 +43,28 @@ void Wall::processEvents( sf::Event& event ) {}
 
 void Wall::initPhysicalPart()
 {
-	b2BodyDef wallBodyDef;
-	wallBodyDef.type = b2_staticBody;
 
 	switch( m_side )
 	{
 	case Side::LEFT:
-		wallBodyDef.position.Set( width / 2.f, m_gameWorld->getWindow()->getSize().y / 2 );
 		break;
 	case Side::RIGHT:
-		wallBodyDef.position.Set( m_gameWorld->getWindow()->getSize().x - width / 2.f,
-								  m_gameWorld->getWindow()->getSize().y / 2 );
 		break;
 	case Side::UP:
-		wallBodyDef.position.Set( m_gameWorld->getWindow()->getSize().x / 2.f, width / 2.f );
 		break;
 	case Side::DOWN:
-		wallBodyDef.position.Set( m_gameWorld->getWindow()->getSize().x / 2.f,
-								  m_gameWorld->getWindow()->getSize().y - width / 2.f );
 		break;
 	default:
 		break;
 	}
 
-	m_physicalBody = m_gameWorld->getPhysicalWorld()->CreateBody( &wallBodyDef );
-
-	b2PolygonShape wallShape;
-
 	switch( m_orientation )
 	{
 	case Orientation::HORIZONTAL:
-		wallShape.SetAsBox( m_gameWorld->getWindow()->getSize().x / 2, width / 2.f );
 		break;
 	case Orientation::VERTICAL:
-		wallShape.SetAsBox( width / 2.f, m_gameWorld->getWindow()->getSize().y / 2 );
 		break;
 	}
-
-	b2FixtureDef fixture;
-	fixture.filter.categoryBits = m_collisionCategory;
-	fixture.filter.maskBits		= m_collisionMask;
-	fixture.density				= 0.0f;
-	fixture.shape				= &wallShape;
-
-	m_physicalBody->CreateFixture( &fixture );
 }
 
 void Wall::initGfxPart()

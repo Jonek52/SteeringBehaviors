@@ -1,4 +1,4 @@
-#include <SFML/Graphics.hpp>
+#include <SFML\Graphics.hpp>
 #include "Sources\Graphics\Game.h"
 
 #include <memory>
@@ -26,7 +26,6 @@ int main()
 
 		game.processInput();
 		game.update( delta );
-		game.step( deltaTime );
 		game.render( window );
 	}
 
