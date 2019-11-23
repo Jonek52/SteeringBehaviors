@@ -14,6 +14,7 @@ namespace SteeringBehaviors
 {
 namespace Graphics
 {
+class Player;
 class GameWorld : public Updatable, public Renderable, public Input::InputHandling
 {
 public:
@@ -32,9 +33,11 @@ public:
 
 	virtual void teardown();
 	virtual void render( sf::RenderWindow* window ) override;
-	virtual void update( std::chrono::milliseconds delta ) override;
+	virtual void update( float delta ) override;
 	virtual void processInput() override;
 	virtual void processEvents( sf::Event& event ) override;
+	virtual Player* getPlayer();
+
 	virtual sf::Window* getWindow() const;
 
 protected:
@@ -42,7 +45,8 @@ protected:
 
 private:
 	sf::Window* m_mainWindow;
-	std::vector< std::unique_ptr< GameEntity > > m_gameEntities;
+	std::vector< GameEntity* > m_gameEntities;
+	Player* m_player;
 };
 
 } // namespace Graphics

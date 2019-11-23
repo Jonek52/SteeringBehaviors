@@ -4,13 +4,14 @@
 #include "Updatable.h"
 #include "../Input/InputHandling.h"
 
+#include "..\Math\Vector2.h"
+
 #include <memory>
 
 namespace sf
 {
 class Shape;
-}
-class b2Body;
+} // namespace sf
 
 namespace SteeringBehaviors
 {
@@ -21,10 +22,18 @@ class GameEntity : public Updatable, public Renderable, public Input::InputHandl
 {
 protected:
 public:
-	GameEntity( GameWorld* gameWorld, float maxForceValue );
+	GameEntity( GameWorld* gameWorld, float maxSpeed );
 	virtual ~GameEntity();
 	virtual void init()		= 0;
 	virtual void teardown() = 0;
+
+	virtual Math::Vector2 getPosition() const;
+	virtual Math::Vector2 getVelocity() const;
+	virtual Math::Vector2 getLookDirection() const;
+	virtual Math::Vector2 getSideDirection() const;
+	virtual sf::Shape* getGraphicalBody() const;
+	virtual float getMaxSpeed() const;
+	virtual GameWorld* getWorld();
 
 protected:
 	virtual void initGfxPart()		= 0;
@@ -36,7 +45,17 @@ protected:
 	GameWorld* m_gameWorld;
 	std::unique_ptr< sf::Shape > m_graphicalBody;
 
-	const float m_maxForceValue;
+	Math::Vector2 m_velocity;
+	Math::Vector2 m_lookDirection;
+	Math::Vector2 m_sideDirection;
+
+	float m_mass{ 1.0f };
+	float m_maxSpeed;
+	float m_maxForce;
+	float m_maxTurnRate;
+
+	Math::Vector2 m_position;
+	Math::Vector2 m_targetDirection;
 };
 
 } // namespace Graphics

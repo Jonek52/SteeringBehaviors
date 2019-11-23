@@ -34,7 +34,7 @@ void Game::render( sf::RenderWindow* window )
 	window->display();
 }
 
-void Game::update(std::chrono::milliseconds delta)
+void Game::update(float delta)
 {
 	m_gameWorld->update(delta);
 }

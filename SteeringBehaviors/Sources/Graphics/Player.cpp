@@ -24,6 +24,8 @@ Player::~Player() = default;
 
 void Player::init()
 {
+	m_lookDirection = Math::Vector2{ 0.f, -1.f };
+	m_sideDirection = m_lookDirection.perp();
 
 	initGfxPart();
 	initPhysicalPart();
@@ -31,15 +33,16 @@ void Player::init()
 
 void Player::teardown() {}
 
-void Player::update( std::chrono::milliseconds delta )
+void Player::update( float delta )
 {
 
 	applyForce();
-	handleShooting( delta );
+	move( delta );
 	rotate();
+	handleShooting( delta );
 }
 
-void Player::handleShooting( std::chrono::milliseconds delta )
+void Player::handleShooting( float delta )
 {
 	if( wantsToShoot )
 	{
@@ -65,18 +68,18 @@ void Player::shootBall()
 
 void Player::spawnBall()
 {
-	m_ball.graphicalBody = std::make_unique< sf::CircleShape >( m_ball.radius, 12 );
+	// m_ball.graphicalBody = std::make_unique< sf::CircleShape >( m_ball.radius, 12 );
 
-	sf::Vector2f origin{ 0.f, 0.f };
-	for( int i = 0; i < m_ball.graphicalBody->getPointCount(); ++i )
-	{
-		origin += m_ball.graphicalBody->getPoint( i );
-	}
+	// sf::Vector2f origin{ 0.f, 0.f };
+	// for( int i = 0; i < m_ball.graphicalBody->getPointCount(); ++i )
+	//{
+	//	origin += m_ball.graphicalBody->getPoint( i );
+	//}
 
-	origin /= static_cast< float >( m_ball.graphicalBody->getPointCount() );
+	// origin /= static_cast< float >( m_ball.graphicalBody->getPointCount() );
 
-	m_ball.graphicalBody->setOrigin( origin );
-	m_ball.graphicalBody->setFillColor( sf::Color::Yellow );
+	// m_ball.graphicalBody->setOrigin( origin );
+	// m_ball.graphicalBody->setFillColor( sf::Color::Yellow );
 }
 
 void Player::wait()
@@ -93,28 +96,31 @@ void Player::wait()
 void Player::render( RenderWindow* window )
 {
 	window->draw( *m_graphicalBody );
-
-	if( m_ball.graphicalBody )
-	{
-		window->draw( *m_ball.graphicalBody );
-	}
 }
 
-void Player::move( float deltaTime ) {}
+void Player::move( float delta )
+{
+	m_position += m_velocity * delta;
+	m_graphicalBody->setPosition( Math::toSFMLVector( m_position ) );
+}
 
 void Player::applyForce()
 {
-	// if( m_moveLeft )
+	Math::Vector2 velocity{ 0.f, 0.f };
 
-	//	if( m_moveRight )
+	if( m_moveLeft )
+		velocity += Math::Vector2{ -1.f, 0.f };
 
-	//		if( m_moveLeft && m_moveRight )
+	if( m_moveRight )
+		velocity += Math::Vector2{ 1.f, 0.f };
 
-	//			if( m_moveUp )
+	if( m_moveUp )
+		velocity += Math::Vector2{ 0.f, 1.f };
 
-	//				if( m_moveDown )
+	if( m_moveDown )
+		velocity += Math::Vector2{ 0.f, -1.f };
 
-	//					if( m_moveUp && m_moveDown )
+	m_velocity = velocity.normalize() * m_maxSpeed;
 }
 
 void Player::processInput()
@@ -158,22 +164,34 @@ void Player::handleKeyboard()
 	else
 		m_moveUp = false;
 }
+
 void Player::handleMouse()
 {
 	sf::Vector2i mousePosition = sf::Mouse::getPosition( *m_gameWorld->getWindow() );
+	sf::Vector2f fmousePosition{ static_cast< float >( mousePosition.x ), static_cast< float >( mousePosition.y ) };
+
+	m_targetDirection = Math::toMathVector( fmousePosition - m_graphicalBody->getPosition() );
+	m_targetDirection.normalize();
 }
 
 void Player::rotate()
 {
+	float cos				   = m_lookDirection.x * m_targetDirection.x + m_lookDirection.y * m_targetDirection.y;
+	float sin				   = m_lookDirection.x * m_targetDirection.y - m_lookDirection.y * m_targetDirection.x;
+	float rotationAngle		   = atan2( sin, cos );
+	float rotationAngleDegrees = Math::toDegrees( rotationAngle );
 
-	// m_graphicalBody->rotate( rotationAngleDegrees );
+	m_lookDirection = m_targetDirection;
+	m_sideDirection = m_lookDirection.perp();
+
+	m_graphicalBody->rotate( rotationAngleDegrees );
 }
 
 void Player::initGfxPart()
 {
-	m_graphicalBody = std::make_unique< sf::ConvexShape >();
-	m_graphicalBody->setFillColor( sf::Color::Green );
-	auto* playerGfx = dynamic_cast< sf::ConvexShape* >( m_graphicalBody.get() );
+
+	auto playerGfx = std::make_unique< sf::ConvexShape >();
+	playerGfx->setFillColor( sf::Color::Green );
 
 	playerGfx->setPointCount( 3 );
 
@@ -195,7 +213,9 @@ void Player::initGfxPart()
 	playerGfx->setPoint( 1, points[ 1 ] - center );
 	playerGfx->setPoint( 2, points[ 2 ] - center );
 
-	m_graphicalBody->setScale( { 0.7f, 0.7f } );
+	playerGfx->setScale( { 0.7f, 0.7f } );
+	m_position		= Math::Vector2{ 400.f, 300.f };
+	m_graphicalBody = std::move( playerGfx );
 }
 
 void Player::initPhysicalPart() {}

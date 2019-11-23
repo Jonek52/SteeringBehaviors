@@ -4,7 +4,8 @@
 
 #include "Enemy.h"
 #include "GameWorld.h"
-#include "../Math/MathFunctions.h"
+#include "..\Math\MathFunctions.h"
+#include "..\AI\Bahaviors.h"
 
 namespace SteeringBehaviors
 {
@@ -13,6 +14,7 @@ namespace Graphics
 
 Enemy::Enemy( GameWorld* gameWorld, float maxSpeed ) : GameEntity{ gameWorld, maxSpeed }
 {
+	m_steeringBehaviors = new AI::Behaviors( this );
 	init();
 }
 
@@ -20,14 +22,30 @@ Enemy::~Enemy() = default;
 
 void Enemy::init()
 {
+	m_lookDirection = Math::Vector2{ 1.0f, 0.0f };
+	m_sideDirection = m_lookDirection.perp();
+
 	initGfxPart();
-	initPhysicalPart();
-	m_graphicalBody->setPosition( sf::Vector2f{ 430.0f, 330.0f } );
 }
 
 void Enemy::teardown() {}
 
-void Enemy::update( std::chrono::milliseconds delta ) {}
+void Enemy::update( float delta )
+{
+	Math::Vector2 steeringForce = m_steeringBehaviors->calculate();
+	Math::Vector2 acceleration	= steeringForce / m_mass;
+	m_velocity += acceleration * delta;
+
+	m_velocity.truncate( m_maxSpeed );
+	m_position += m_velocity * delta;
+	m_graphicalBody->setPosition( Math::toSFMLVector( m_position ) );
+
+	if( m_velocity.lengthSquared() > 0.00001 )
+	{
+		m_lookDirection = Math::normalize( m_velocity );
+		m_sideDirection = m_lookDirection.perp();
+	}
+}
 
 void Enemy::render( RenderWindow* window )
 {
@@ -40,11 +58,13 @@ void Enemy::processEvents( sf::Event& event ) {}
 
 void Enemy::initGfxPart()
 {
-	m_graphicalBody = std::make_unique< sf::ConvexShape >();
+	m_graphicalBody = std::make_unique< sf::CircleShape >( 20.0f, 10 );
 	m_graphicalBody->setFillColor( sf::Color::Red );
-	auto* enemyGfx = dynamic_cast< sf::ConvexShape* >( m_graphicalBody.get() );
+	m_position = Math::Vector2{ 600.0f, 500.f };
 
-	enemyGfx->setPointCount( 3 );
+	// auto* enemyGfx = dynamic_cast< sf::ConvexShape* >( m_graphicalBody.get() );
+
+	/*enemyGfx->setPointCount( 3 );
 
 	std::vector< sf::Vector2f > points;
 	points.emplace_back( 0.0f, -100.0f );
@@ -62,13 +82,12 @@ void Enemy::initGfxPart()
 
 	enemyGfx->setPoint( 0, points[ 0 ] - center );
 	enemyGfx->setPoint( 1, points[ 1 ] - center );
-	enemyGfx->setPoint( 2, points[ 2 ] - center );
-
-	m_graphicalBody->setScale( { 0.5f, 0.5f } );
+	enemyGfx->setPoint( 2, points[ 2 ] - center );*/
 }
 
 void Enemy::initPhysicalPart() {}
 
 void Enemy::wrapScreenPosition() {}
+
 } // namespace Graphics
 } // namespace SteeringBehaviors

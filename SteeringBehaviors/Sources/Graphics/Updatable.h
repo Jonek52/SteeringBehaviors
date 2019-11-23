@@ -9,8 +9,8 @@ namespace Graphics
 class Updatable
 {
 public:
-	virtual ~Updatable()  = default;
-	virtual void update(std::chrono::milliseconds delta) = 0;
+	virtual ~Updatable()			   = default;
+	virtual void update( float delta ) = 0;
 };
 
 } // namespace Graphics

@@ -11,29 +11,27 @@ namespace SteeringBehaviors
 namespace Graphics
 {
 
-GameWorld::GameWorld( sf::Window* window ) : m_mainWindow{ window }
-{
-}
+GameWorld::GameWorld( sf::Window* window ) : m_mainWindow{ window } {}
 
 void GameWorld::init()
 {
-	auto player = std::make_unique< Player >( this, 50.0f );
-	m_gameEntities.push_back( std::move( player ) );
+	m_player = new Player( this, 50.0f );
+	m_gameEntities.push_back( m_player );
 
-	auto leftWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::VERTICAL, Wall::Side::LEFT );
-	m_gameEntities.push_back( std::move( leftWall ) );
+	auto enemy = new Enemy( this, 15.0f );
+	m_gameEntities.push_back( enemy );
 
-	auto rightWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::VERTICAL, Wall::Side::RIGHT );
-	m_gameEntities.push_back( std::move( rightWall ) );
+	// auto leftWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::VERTICAL, Wall::Side::LEFT );
+	// m_gameEntities.push_back( std::move( leftWall ) );
 
-	auto upperWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::HORIZONTAL, Wall::Side::UP );
-	m_gameEntities.push_back( std::move( upperWall ) );
+	// auto rightWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::VERTICAL, Wall::Side::RIGHT );
+	// m_gameEntities.push_back( std::move( rightWall ) );
 
-	auto downWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::HORIZONTAL, Wall::Side::DOWN );
-	m_gameEntities.push_back( std::move( downWall ) );
+	// auto upperWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::HORIZONTAL, Wall::Side::UP );
+	// m_gameEntities.push_back( std::move( upperWall ) );
 
-	auto enemy = std::make_unique< Enemy >( this, 50.0f );
-	m_gameEntities.push_back( std::move( enemy ) );
+	// auto downWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::HORIZONTAL, Wall::Side::DOWN );
+	// m_gameEntities.push_back( std::move( downWall ) );
 }
 
 void GameWorld::teardown() {}
@@ -46,7 +44,7 @@ void GameWorld::render( sf::RenderWindow* window )
 	}
 }
 
-void GameWorld::update( std::chrono::milliseconds delta )
+void GameWorld::update( float delta )
 {
 	for( const auto& gameEntity : m_gameEntities )
 	{
@@ -77,6 +75,12 @@ void GameWorld::processEvents( sf::Event& event )
 		gameEntity->processEvents( event );
 	}
 }
+
+Player* GameWorld::getPlayer()
+{
+	return m_player;
+}
+
 sf::Window* GameWorld::getWindow() const
 {
 	return m_mainWindow;

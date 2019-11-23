@@ -3,8 +3,8 @@
 
 #include <memory>
 
-constexpr float deltaTime				  = 1.0f / 60.0f;
-constexpr std::chrono::milliseconds delta = std::chrono::milliseconds( 16LL );
+constexpr float deltaTime{ 1.f / 60.f };
+
 int main()
 {
 	auto window = new sf::RenderWindow{ sf::VideoMode( 1920, 1080 ), "SFML works!" };
@@ -25,7 +25,7 @@ int main()
 		}
 
 		game.processInput();
-		game.update( delta );
+		game.update( deltaTime );
 		game.render( window );
 	}
 

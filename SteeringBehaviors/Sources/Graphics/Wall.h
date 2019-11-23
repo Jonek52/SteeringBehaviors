@@ -35,7 +35,7 @@ public:
 	virtual void init() override;
 	virtual void teardown() override;
 	virtual void render( RenderWindow* window ) override;
-	virtual void update(std::chrono::milliseconds delta) override;
+	virtual void update(float delta) override;
 
 	virtual void processInput() override;
 	virtual void processEvents( sf::Event& event ) override;

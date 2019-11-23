@@ -36,7 +36,7 @@ void Wall::render( RenderWindow* window )
 	window->draw( *m_graphicalBody );
 }
 
-void Wall::update( std::chrono::milliseconds delta ) {}
+void Wall::update( float delta ) {}
 
 void Wall::processInput() {}
 void Wall::processEvents( sf::Event& event ) {}

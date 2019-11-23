@@ -22,20 +22,13 @@ class GameWorld;
 class Player : public GameEntity
 {
 public:
-	struct Ball
-	{
-		std::unique_ptr< sf::CircleShape > graphicalBody;
-		const float radius{ 15.0f };
-		float forceApplied{ 100.0f };
-	};
-
 	Player( GameWorld* gameWorld, float maxSpeed );
 	virtual ~Player();
 
 	virtual void init() override;
 	virtual void teardown() override;
 	virtual void render( RenderWindow* window ) override;
-	virtual void update( std::chrono::milliseconds delta ) override;
+	virtual void update( float delta ) override;
 
 	virtual void processInput() override;
 	virtual void processEvents( sf::Event& event ) override;
@@ -47,8 +40,8 @@ protected:
 	virtual void wrapScreenPosition() override;
 	virtual void handleKeyboard();
 	virtual void handleMouse();
-	virtual void handleShooting( std::chrono::milliseconds delta );
-	void move( float deltaTime );
+	virtual void handleShooting( float delta );
+	void move( float delta );
 	void rotate();
 
 	virtual void applyForce();
@@ -72,7 +65,6 @@ private:
 	std::array< sf::Vertex, 2 > m_line;
 
 	std::chrono::steady_clock::time_point m_counter;
-	Ball m_ball;
 };
 
 } // namespace Graphics

@@ -6,29 +6,35 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <cstdlib>
 
 namespace SteeringBehaviors
 {
 namespace Math
 {
-template< typename T >
-T vectorLenght( sf::Vector2< T > v )
+
+inline float randFloat()
 {
-	return sqrt( v.x * v.x + v.y * v.y );
+	return ( ( rand() ) / ( RAND_MAX + 1.0f ) );
 }
 
-template< typename T >
-T vectorLenghtSquared( sf::Vector2< T > v )
+inline float randInRange( float x, float y )
 {
-	return v.x * v.x + v.y * v.y;
+	return x + randFloat() * ( y - x );
 }
 
-template< typename T >
-sf::Vector2< T > normalizeVector( sf::Vector2< T > v )
+inline bool randBool()
 {
-	float lenght = vectorLenght( v );
-	assert( lenght > 0.0f );
-	return v / vectorLenght( v );
+	if( randFloat() > 0.5 )
+		return true;
+
+	else
+		return false;
+}
+
+inline float randomClamped()
+{
+	return randFloat() - randFloat();
 }
 
 inline float toDegrees( float radians )
@@ -41,6 +47,18 @@ inline float toRadians( float degrees )
 {
 	float inverse180 = 1.0f / 180.0f;
 	return degrees * ( static_cast< float >( M_PI ) * inverse180 );
+}
+
+template< typename T = float >
+sf::Vector2< T > toSFMLVector( const Vector2& v )
+{
+	return sf::Vector2< T >( v.x, v.y );
+}
+
+template< typename T >
+Vector2 toMathVector( const sf::Vector2< T > v )
+{
+	return Vector2{ static_cast< float >( v.x ), static_cast< float >( v.y ) };
 }
 
 } // namespace Math
