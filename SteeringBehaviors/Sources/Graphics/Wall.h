@@ -35,7 +35,7 @@ public:
 	virtual void init() override;
 	virtual void teardown() override;
 	virtual void render( RenderWindow* window ) override;
-	virtual void update(float delta) override;
+	virtual void update( float delta ) override;
 
 	virtual void processInput() override;
 	virtual void processEvents( sf::Event& event ) override;
@@ -50,6 +50,10 @@ private:
 private:
 	Orientation m_orientation;
 	Side m_side;
+
+	Math::Vector2 m_normal;
+	Math::Vector2 m_from;
+	Math::Vector2 m_to;
 
 	inline static constexpr float width = 10.0f;
 };

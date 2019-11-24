@@ -95,5 +95,8 @@
     <ClInclude Include="Sources\AI\Behaviors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Math\Geometry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

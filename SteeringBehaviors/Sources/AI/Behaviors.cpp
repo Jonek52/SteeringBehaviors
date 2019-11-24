@@ -4,11 +4,13 @@
 #include "..\Graphics\Player.h"
 #include "..\Graphics\GameWorld.h"
 #include "..\Graphics\GameEntity.h"
+#include "..\Graphics\Wall.h"
 
 #include "..\Math\MathFunctions.h"
 #include "..\Math\Matrix.h"
 #include "..\Math\Transformations.h"
 
+#include <math.h>
 #include <algorithm>
 namespace SteeringBehaviors::AI
 {
@@ -164,4 +166,60 @@ SteeringBehaviors::Math::Vector2 Behaviors::obstacleAvoidance( const std::vector
 	return Math::VectorToWorldSpace( steeringForce, m_enemy->getLookDirection(), m_enemy->getSideDirection() );
 }
 
+Math::Vector2 Behaviors::wallAvoidance( const std::vector< Graphics::Wall* >& walls )
+{
+	createFeelers();
+
+	float distToThisIP	  = 0.0f;
+	float distToClosestIP = std::numeric_limits< float >::max();
+
+	int closestWall = -1;
+
+	Math::Vector2 steeringForce{};
+	Math::Vector2 point{};
+	Math::Vector2 closestPoint{};
+
+	for( size_t flr = 0; flr < m_feelers.size(); ++flr )
+	{
+		for( size_t w = 0; w < walls.size(); ++w )
+		{
+			if( Math::LineIntersection2D( m_enemy->getPosition(),
+										  m_feelers[ flr ],
+										  walls[ w ].from(),
+										  walls[ w ].to(),
+										  distToThisIP,
+										  point ) )
+			{
+				if( distToThisIP < distToClosestIP )
+				{
+					distToClosestIP = distToThisIP;
+					closestWall		= w;
+					closestPoint	= point;
+				}
+			}
+		}
+
+		if( closestWall >= 0 )
+		{
+			Math::Vector2 overShoot = m_feelers[ flr ] - closestPoint;
+
+			steeringForce = walls[ closestWall ].normal() * overShoot.length();
+		}
+	}
+
+	return steeringForce;
+}
+
+void Behaviors::createFeelers()
+{
+	m_feelers[ 0 ] = m_enemy->getPosition() + m_wallDetectionFeelersLen * m_enemy->getLookDirection();
+
+	Math::Vector2 temp = m_enemy->getLookDirection();
+	Math::Vec2DRotateAroundOrigin( temp, static_cast< float >( M_PI_2 ) * 3.5f );
+	m_feelers[ 1 ] = m_enemy->getPosition() + m_wallDetectionFeelersLen / 2.0f * temp;
+
+	temp = m_enemy->getLookDirection();
+	Math::Vec2DRotateAroundOrigin( temp, static_cast< float >( M_PI_2 ) * 0.5f );
+	m_feelers[ 2 ] = m_enemy->getPosition() + m_wallDetectionFeelersLen / 2.0f * temp;
+}
 } // namespace SteeringBehaviors::AI

@@ -9,11 +9,12 @@ namespace SteeringBehaviors::Graphics
 class Enemy;
 class Player;
 class GameEntity;
+class Wall;
 } // namespace SteeringBehaviors::Graphics
 
 namespace SteeringBehaviors::AI
 {
-class Behaviors
+class Behaviors final
 {
 public:
 	enum class Deceleration
@@ -33,6 +34,10 @@ public:
 	Math::Vector2 evade( const Graphics::Player* pursuer );
 	Math::Vector2 wander();
 	Math::Vector2 obstacleAvoidance( const std::vector< Graphics::GameEntity* >& obstacles );
+	Math::Vector2 wallAvoidance( const std::vector< Graphics::Wall* >& walls );
+
+private:
+	void createFeelers();
 
 private:
 	Graphics::Enemy* m_enemy{};
@@ -46,5 +51,8 @@ private:
 	float m_wanderRadius{ 30.0f };
 	float m_wanderDistance{ 200.f };
 	float m_wanderJitter{ 40.0f };
+
+	std::vector< Math::Vector2 > m_feelers;
+	float m_wallDetectionFeelersLen{ 50.0f };
 };
 } // namespace SteeringBehaviors::AI

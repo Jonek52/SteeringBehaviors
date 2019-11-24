@@ -167,6 +167,7 @@
     <ClInclude Include="Sources\Graphics\Updatable.h" />
     <ClInclude Include="Sources\Graphics\Wall.h" />
     <ClInclude Include="Sources\Input\InputHandling.h" />
+    <ClInclude Include="Sources\Math\Geometry.h" />
     <ClInclude Include="Sources\Math\MathFunctions.h" />
     <ClInclude Include="Sources\Math\Matrix.h" />
     <ClInclude Include="Sources\Math\Transformations.h" />
