@@ -2,24 +2,13 @@
 
 #include "GameEntity.h"
 
-namespace sf
-{
-class Shape;
-}
-
-namespace SteeringBehaviors::AI
-{
-class Behaviors;
-}
-
 namespace SteeringBehaviors::Graphics
 {
-class GameWorld;
-class Enemy : public GameEntity
+class Obstacle : public GameEntity
 {
 public:
-	Enemy( GameWorld* gameWorld, float maxSpeed );
-	virtual ~Enemy();
+	Obstacle( GameWorld* gameWorld, float maxSpeed, Math::Vector2 position, float radius);
+	virtual ~Obstacle();
 
 	virtual void init() override;
 	virtual void teardown() override;
@@ -27,12 +16,14 @@ public:
 	virtual void render( RenderWindow* ) override;
 	virtual void processInput() override;
 	virtual void processEvents( sf::Event& event ) override;
-	
+
 protected:
 	virtual void initGfxPart() override;
 	virtual void initPhysicalPart() override;
 	virtual void wrapScreenPosition() override;
 
-	AI::Behaviors* m_steeringBehaviors;
+private:
+
 };
+
 } // namespace SteeringBehaviors::Graphics

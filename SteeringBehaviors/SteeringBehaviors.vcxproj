@@ -144,22 +144,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Sources\AI\Bahaviors.cpp" />
+    <ClCompile Include="Sources\AI\Behaviors.cpp" />
     <ClCompile Include="Sources\Graphics\Enemy.cpp" />
     <ClCompile Include="Sources\Graphics\Game.cpp" />
     <ClCompile Include="Sources\Graphics\GameEntity.cpp" />
     <ClCompile Include="Sources\Graphics\GameWorld.cpp" />
+    <ClCompile Include="Sources\Graphics\Obstacle.cpp" />
     <ClCompile Include="Sources\Graphics\Player.cpp" />
     <ClCompile Include="Sources\Graphics\Wall.cpp" />
     <ClCompile Include="Sources\Math\Vector2.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sources\AI\Bahaviors.h" />
+    <ClInclude Include="Sources\AI\Behaviors.h" />
     <ClInclude Include="Sources\Graphics\Ball.h" />
     <ClInclude Include="Sources\Graphics\Enemy.h" />
     <ClInclude Include="Sources\Graphics\Game.h" />
     <ClInclude Include="Sources\Graphics\GameEntity.h" />
     <ClInclude Include="Sources\Graphics\GameWorld.h" />
+    <ClInclude Include="Sources\Graphics\Obstacle.h" />
     <ClInclude Include="Sources\Graphics\Player.h" />
     <ClInclude Include="Sources\Graphics\Renderable.h" />
     <ClInclude Include="Sources\Graphics\Updatable.h" />

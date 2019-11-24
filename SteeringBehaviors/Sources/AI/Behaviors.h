@@ -2,10 +2,13 @@
 
 #include "..\Math\Vector2.h"
 
+#include <vector>
+
 namespace SteeringBehaviors::Graphics
 {
 class Enemy;
 class Player;
+class GameEntity;
 } // namespace SteeringBehaviors::Graphics
 
 namespace SteeringBehaviors::AI
@@ -29,16 +32,19 @@ public:
 	Math::Vector2 pursuit( const Graphics::Player* evader );
 	Math::Vector2 evade( const Graphics::Player* pursuer );
 	Math::Vector2 wander();
+	Math::Vector2 obstacleAvoidance( const std::vector< Graphics::GameEntity* >& obstacles );
 
 private:
 	Graphics::Enemy* m_enemy{};
 	Math::Vector2 m_steeringForce{};
 	Math::Vector2 m_target{};
 
-	Math::Vector2 m_wanderTarget;
+	Math::Vector2 m_wanderTarget{};
 
-	float m_wanderRadius{ 200.0f };
-	float m_wanderDistance{ 300.f };
-	float m_wanderJitter{ 1000.0f };
+	const float m_minDetectionBoxLenght{ 50.0f };
+	float m_boxLenght;
+	float m_wanderRadius{ 30.0f };
+	float m_wanderDistance{ 200.f };
+	float m_wanderJitter{ 40.0f };
 };
 } // namespace SteeringBehaviors::AI

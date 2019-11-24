@@ -26,7 +26,7 @@ Math::Vector2 GameEntity::getLookDirection() const
 	return m_lookDirection;
 }
 
-SteeringBehaviors::Math::Vector2 GameEntity::getSideDirection () const
+SteeringBehaviors::Math::Vector2 GameEntity::getSideDirection() const
 {
 	return m_sideDirection;
 }
@@ -41,9 +41,34 @@ float GameEntity::getMaxSpeed() const
 	return m_maxSpeed;
 }
 
+float GameEntity::getSpeed() const
+{
+	return m_velocity.length();
+}
+
 GameWorld* GameEntity::getWorld()
 {
 	return m_gameWorld;
+}
+
+float GameEntity::getRadius ()
+{
+	return m_radius;
+}
+
+bool GameEntity::isTagged () const
+{
+	return m_tagged;
+}
+
+void GameEntity::tag ()
+{
+	m_tagged = true;
+}
+
+void GameEntity::untag ()
+{
+	m_tagged = false;
 }
 
 } // namespace Graphics

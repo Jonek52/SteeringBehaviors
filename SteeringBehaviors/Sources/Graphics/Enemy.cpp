@@ -1,11 +1,11 @@
-#include <SFML\Graphics\ConvexShape.hpp>
+#include "SFML\Graphics\CircleShape.hpp"
 #include <SFML\Graphics.hpp>
 #include <SFML\System\Vector2.hpp>
 
 #include "Enemy.h"
 #include "GameWorld.h"
 #include "..\Math\MathFunctions.h"
-#include "..\AI\Bahaviors.h"
+#include "..\AI\Behaviors.h"
 
 namespace SteeringBehaviors
 {
@@ -14,17 +14,20 @@ namespace Graphics
 
 Enemy::Enemy( GameWorld* gameWorld, float maxSpeed ) : GameEntity{ gameWorld, maxSpeed }
 {
-	m_steeringBehaviors = new AI::Behaviors( this );
+
+	m_position		= Math::Vector2{ 600.0f, 500.f };
+	m_radius		= 20.0f;
+	m_lookDirection = Math::Vector2{ 1.0f, 0.0f };
+	m_sideDirection = m_lookDirection.perp();
+
 	init();
+	m_steeringBehaviors = new AI::Behaviors( this );
 }
 
 Enemy::~Enemy() = default;
 
 void Enemy::init()
 {
-	m_lookDirection = Math::Vector2{ 1.0f, 0.0f };
-	m_sideDirection = m_lookDirection.perp();
-
 	initGfxPart();
 }
 
@@ -60,29 +63,18 @@ void Enemy::initGfxPart()
 {
 	m_graphicalBody = std::make_unique< sf::CircleShape >( 20.0f, 10 );
 	m_graphicalBody->setFillColor( sf::Color::Red );
-	m_position = Math::Vector2{ 600.0f, 500.f };
 
-	// auto* enemyGfx = dynamic_cast< sf::ConvexShape* >( m_graphicalBody.get() );
+	sf::Vector2f center{ 0.f, 0.f };
+	size_t numOfPoints = m_graphicalBody->getPointCount();
 
-	/*enemyGfx->setPointCount( 3 );
-
-	std::vector< sf::Vector2f > points;
-	points.emplace_back( 0.0f, -100.0f );
-	points.emplace_back( -50.0f, 0.0f );
-	points.emplace_back( 50.0f, 0.0f );
-
-	sf::Vector2f center{ 0.0f, 0.0f };
-
-	for( const auto& p : points )
+	for( size_t i = 0; i < numOfPoints; ++i )
 	{
-		center += p;
+		center += m_graphicalBody->getPoint( i );
 	}
 
-	center /= 3.0f;
-
-	enemyGfx->setPoint( 0, points[ 0 ] - center );
-	enemyGfx->setPoint( 1, points[ 1 ] - center );
-	enemyGfx->setPoint( 2, points[ 2 ] - center );*/
+	center /= static_cast< float >( numOfPoints );
+	m_graphicalBody->setOrigin( center );
+	m_graphicalBody->setPosition( { 0.0f, 0.0f } );
 }
 
 void Enemy::initPhysicalPart() {}

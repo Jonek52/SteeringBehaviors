@@ -33,7 +33,13 @@ public:
 	virtual Math::Vector2 getSideDirection() const;
 	virtual sf::Shape* getGraphicalBody() const;
 	virtual float getMaxSpeed() const;
+	virtual float getSpeed() const;
 	virtual GameWorld* getWorld();
+	virtual float getRadius();
+
+	bool isTagged() const;
+	void tag();
+	void untag();
 
 protected:
 	virtual void initGfxPart()		= 0;
@@ -50,9 +56,12 @@ protected:
 	Math::Vector2 m_sideDirection;
 
 	float m_mass{ 1.0f };
+	float m_radius;
 	float m_maxSpeed;
 	float m_maxForce;
 	float m_maxTurnRate;
+
+	bool m_tagged{ false };
 
 	Math::Vector2 m_position;
 	Math::Vector2 m_targetDirection;

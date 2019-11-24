@@ -15,6 +15,10 @@ namespace SteeringBehaviors
 namespace Graphics
 {
 class Player;
+class Enemy;
+class GameEntity;
+class Obstacle;
+
 class GameWorld : public Updatable, public Renderable, public Input::InputHandling
 {
 public:
@@ -36,16 +40,21 @@ public:
 	virtual void update( float delta ) override;
 	virtual void processInput() override;
 	virtual void processEvents( sf::Event& event ) override;
-	virtual Player* getPlayer();
+
+	virtual void tagObstaclesWithinRange( GameEntity* object, float range );
 
 	virtual sf::Window* getWindow() const;
+	virtual Player* getPlayer() const;
+	virtual std::vector< GameEntity* >& getObstacles();
 
 protected:
 	virtual void initGameEntities();
+	virtual void tagNeightbors( GameEntity* object, std::vector< GameEntity* >& obstacles, float radius );
 
 private:
 	sf::Window* m_mainWindow;
 	std::vector< GameEntity* > m_gameEntities;
+	std::vector< GameEntity* > m_obstacles;
 	Player* m_player;
 };
 

@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Wall.h"
+#include "Obstacle.h"
 
 namespace SteeringBehaviors
 {
@@ -20,6 +21,22 @@ void GameWorld::init()
 
 	auto enemy = new Enemy( this, 15.0f );
 	m_gameEntities.push_back( enemy );
+
+	auto obstacle1 = new Obstacle( this, 0.0f, Math::Vector2{ 700.f, 300.f }, 30.0f );
+	m_gameEntities.push_back( obstacle1 );
+	m_obstacles.push_back( obstacle1 );
+
+	auto obstacle2 = new Obstacle( this, 0.0f, Math::Vector2{ 400.f, 600.f }, 20.0f );
+	m_gameEntities.push_back( obstacle2 );
+	m_obstacles.push_back( obstacle2 );
+
+	auto obstacle3 = new Obstacle( this, 0.0f, Math::Vector2{ 700.f, 700.f }, 40.0f );
+	m_gameEntities.push_back( obstacle3 );
+	m_obstacles.push_back( obstacle3 );
+
+	auto obstacle4 = new Obstacle( this, 0.0f, Math::Vector2{ 100.f, 500.f }, 30.0f );
+	m_gameEntities.push_back( obstacle4 );
+	m_obstacles.push_back( obstacle4 );
 
 	// auto leftWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::VERTICAL, Wall::Side::LEFT );
 	// m_gameEntities.push_back( std::move( leftWall ) );
@@ -76,9 +93,36 @@ void GameWorld::processEvents( sf::Event& event )
 	}
 }
 
-Player* GameWorld::getPlayer()
+void GameWorld::tagObstaclesWithinRange( GameEntity* object, float range )
+{
+	tagNeightbors( object, m_obstacles, range );
+}
+
+void GameWorld::tagNeightbors( GameEntity* object, std::vector< GameEntity* >& obstacles, float radius )
+{
+
+	for( auto& obstacle : obstacles )
+	{
+		obstacle->untag();
+
+		Math::Vector2 to = object->getPosition() - obstacle->getPosition();
+		float range		 = radius + obstacle->getRadius();
+
+		if( ( obstacle != object ) && to.lengthSquared() < range * range )
+		{
+			obstacle->tag();
+		}
+	}
+}
+
+Player* GameWorld::getPlayer() const
 {
 	return m_player;
+}
+
+std::vector< GameEntity* >& GameWorld::getObstacles()
+{
+	return m_obstacles;
 }
 
 sf::Window* GameWorld::getWindow() const

@@ -1,22 +1,27 @@
-#include "Bahaviors.h"
+#include "Behaviors.h"
+
 #include "..\Graphics\Enemy.h"
 #include "..\Graphics\Player.h"
 #include "..\Graphics\GameWorld.h"
+#include "..\Graphics\GameEntity.h"
+
 #include "..\Math\MathFunctions.h"
 #include "..\Math\Matrix.h"
 #include "..\Math\Transformations.h"
 
 #include <algorithm>
 namespace SteeringBehaviors::AI
-
 {
 
-Behaviors::Behaviors( Graphics::Enemy* enemy ) : m_enemy{ enemy } {}
-
+Behaviors::Behaviors( Graphics::Enemy* enemy ) : m_enemy{ enemy }
+{
+	m_wanderTarget = Math::Vector2{ enemy->getPosition() };
+}
 Math::Vector2 Behaviors::calculate()
 {
 	m_steeringForce.zero();
-	m_steeringForce += wander();
+	m_steeringForce += seek( m_enemy->getWorld()->getPlayer()->getPosition() );
+	m_steeringForce += obstacleAvoidance( m_enemy->getWorld()->getObstacles() );
 	return m_steeringForce;
 }
 
@@ -70,7 +75,7 @@ Math::Vector2 Behaviors::pursuit( const Graphics::Player* evader )
 		return seek( evader->getPosition() );
 	}
 
-	float lookAheadTime = toEvader.length() / ( m_enemy->getMaxSpeed() + evader->getMaxSpeed() );
+	float lookAheadTime = toEvader.length() / ( m_enemy->getMaxSpeed() + evader->getSpeed() );
 
 	return seek( evader->getPosition() + evader->getVelocity() * lookAheadTime );
 }
@@ -90,10 +95,73 @@ Math::Vector2 Behaviors::wander()
 	m_wanderTarget *= m_wanderRadius;
 
 	Math::Vector2 targetLocal = m_wanderTarget + Math::Vector2{ m_wanderDistance, 0.f };
+
 	Math::Vector2 targetWorld = Math::PointToWorldSpace(
 		targetLocal, m_enemy->getLookDirection(), m_enemy->getSideDirection(), m_enemy->getPosition() );
 
 	return targetWorld - m_enemy->getPosition();
+}
+
+SteeringBehaviors::Math::Vector2 Behaviors::obstacleAvoidance( const std::vector< Graphics::GameEntity* >& obstacles )
+{
+	m_boxLenght = m_minDetectionBoxLenght + ( m_enemy->getSpeed() / m_enemy->getMaxSpeed() ) * m_minDetectionBoxLenght;
+
+	m_enemy->getWorld()->tagObstaclesWithinRange( m_enemy, m_boxLenght );
+
+	Graphics::GameEntity* closestIntersectionObstacle = nullptr;
+	float distanceToClosestIP						  = std::numeric_limits< float >::max();
+	Math::Vector2 localPosOfClosestObstacle{};
+
+	for( auto& obstacle : obstacles )
+	{
+		if( obstacle->isTagged() )
+		{
+			Math::Vector2 localPos = Math::PointToLocalSpace( obstacle->getPosition(),
+															  m_enemy->getLookDirection(),
+															  m_enemy->getSideDirection(),
+															  m_enemy->getPosition() );
+
+			if( localPos.x >= 0 )
+			{
+				float expandedRadius = obstacle->getRadius() + m_enemy->getRadius();
+
+				if( fabs( localPos.y ) < expandedRadius )
+				{
+					float cX = localPos.x;
+					float cY = localPos.y;
+
+					float sqrtPart = sqrt( expandedRadius * expandedRadius - cY * cY );
+					float ip	   = cX - sqrtPart;
+
+					if( ip <= 0 )
+					{
+						ip = cX + sqrtPart;
+					}
+
+					if( ip < distanceToClosestIP )
+					{
+						distanceToClosestIP			= ip;
+						closestIntersectionObstacle = obstacle;
+						localPosOfClosestObstacle	= localPos;
+					}
+				}
+			}
+		}
+	}
+
+	Math::Vector2 steeringForce{};
+
+	if( closestIntersectionObstacle )
+	{
+		float multiplier = 1.0f + ( m_boxLenght - localPosOfClosestObstacle.x ) / m_boxLenght;
+
+		steeringForce.y = ( closestIntersectionObstacle->getRadius() - localPosOfClosestObstacle.y ) * multiplier;
+		const float brakingWeight = 0.2f;
+
+		steeringForce.x = ( closestIntersectionObstacle->getRadius() - localPosOfClosestObstacle.x ) * brakingWeight;
+	}
+
+	return Math::VectorToWorldSpace( steeringForce, m_enemy->getLookDirection(), m_enemy->getSideDirection() );
 }
 
 } // namespace SteeringBehaviors::AI
