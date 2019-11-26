@@ -18,6 +18,7 @@ class Player;
 class Enemy;
 class GameEntity;
 class Obstacle;
+class Wall;
 
 class GameWorld : public Updatable, public Renderable, public Input::InputHandling
 {
@@ -46,6 +47,7 @@ public:
 	virtual sf::Window* getWindow() const;
 	virtual Player* getPlayer() const;
 	virtual std::vector< GameEntity* >& getObstacles();
+	virtual std::vector< Wall* >& getWalls();
 
 protected:
 	virtual void initGameEntities();
@@ -55,6 +57,7 @@ private:
 	sf::Window* m_mainWindow;
 	std::vector< GameEntity* > m_gameEntities;
 	std::vector< GameEntity* > m_obstacles;
+	std::vector< Wall* > m_walls;
 	Player* m_player;
 };
 

@@ -38,17 +38,21 @@ void GameWorld::init()
 	m_gameEntities.push_back( obstacle4 );
 	m_obstacles.push_back( obstacle4 );
 
-	// auto leftWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::VERTICAL, Wall::Side::LEFT );
-	// m_gameEntities.push_back( std::move( leftWall ) );
+	auto leftWall = new Wall( this, 0.0f, Wall::Orientation::VERTICAL, Wall::Side::LEFT );
+	m_gameEntities.push_back( leftWall );
+	m_walls.push_back( leftWall );
 
-	// auto rightWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::VERTICAL, Wall::Side::RIGHT );
-	// m_gameEntities.push_back( std::move( rightWall ) );
+	auto rightWall = new Wall( this, 0.0f, Wall::Orientation::VERTICAL, Wall::Side::RIGHT );
+	m_gameEntities.push_back( rightWall );
+	m_walls.push_back( rightWall );
 
-	// auto upperWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::HORIZONTAL, Wall::Side::UP );
-	// m_gameEntities.push_back( std::move( upperWall ) );
+	auto upperWall = new Wall( this, 0.0f, Wall::Orientation::HORIZONTAL, Wall::Side::UP );
+	m_gameEntities.push_back( upperWall );
+	m_walls.push_back( upperWall );
 
-	// auto downWall = std::make_unique< Wall >( this, 0.0f, Wall::Orientation::HORIZONTAL, Wall::Side::DOWN );
-	// m_gameEntities.push_back( std::move( downWall ) );
+	auto downWall = new Wall( this, 0.0f, Wall::Orientation::HORIZONTAL, Wall::Side::DOWN );
+	m_gameEntities.push_back( downWall );
+	m_walls.push_back( downWall );
 }
 
 void GameWorld::teardown() {}
@@ -123,6 +127,11 @@ Player* GameWorld::getPlayer() const
 std::vector< GameEntity* >& GameWorld::getObstacles()
 {
 	return m_obstacles;
+}
+
+std::vector< Wall* >& GameWorld::getWalls()
+{
+	return m_walls;
 }
 
 sf::Window* GameWorld::getWindow() const

@@ -9,8 +9,9 @@
 //
 //------------------------------------------------------------------------
 #include "Vector2.h"
-#include "C2DMatrix.h"
+#include "Matrix.h"
 #include "Transformations.h"
+#include "MathFunctions.h"
 
 #include <math.h>
 #include <vector>
@@ -20,14 +21,14 @@ namespace SteeringBehaviors::Math
 // given a plane and a ray this function determins how far along the ray
 // an interestion occurs. Returns negative if the ray is parallel
 inline float DistanceToRayPlaneIntersection( Vector2 RayOrigin,
-											  Vector2 RayHeading,
-											  Vector2 PlanePoint, // any point on the plane
-											  Vector2 PlaneNormal )
+											 Vector2 RayHeading,
+											 Vector2 PlanePoint, // any point on the plane
+											 Vector2 PlaneNormal )
 {
 
-	float d	 = -PlaneNormal.Dot( PlanePoint );
-	float numer = PlaneNormal.Dot( RayOrigin ) + d;
-	float denom = PlaneNormal.Dot( RayHeading );
+	float d		= -PlaneNormal.dot( PlanePoint );
+	float numer = PlaneNormal.dot( RayOrigin ) + d;
+	float denom = PlaneNormal.dot( RayHeading );
 
 	// normal is parallel to vector
 	if( ( denom < 0.000001 ) && ( denom > -0.000001 ) )
@@ -51,7 +52,7 @@ inline span_type WhereIsPoint( Vector2 point,
 {
 	Vector2 dir = PointOnPlane - point;
 
-	float d = dir.Dot( PlaneNormal );
+	float d = dir.dot( PlaneNormal );
 
 	if( d < -0.000001 )
 	{
@@ -66,15 +67,15 @@ inline span_type WhereIsPoint( Vector2 point,
 	return on_plane;
 }
 
-const float pi = 3.14159;
+const float pi = 3.14159f;
 //-------------------------- GetRayCircleIntersec -----------------------------
 inline float GetRayCircleIntersect( Vector2 RayOrigin, Vector2 RayHeading, Vector2 CircleOrigin, float radius )
 {
 
 	Vector2 ToCircle = CircleOrigin - RayOrigin;
-	float length	  = ToCircle.Length();
-	float v		  = ToCircle.Dot( RayHeading );
-	float d		  = radius * radius - ( length * length - v * v );
+	float length	 = ToCircle.length();
+	float v			 = ToCircle.dot( RayHeading );
+	float d			 = radius * radius - ( length * length - v * v );
 
 	// If there was no intersection, return -1
 	if( d < 0.0 )
@@ -89,9 +90,9 @@ inline bool DoRayCircleIntersect( Vector2 RayOrigin, Vector2 RayHeading, Vector2
 {
 
 	Vector2 ToCircle = CircleOrigin - RayOrigin;
-	float length	  = ToCircle.Length();
-	float v		  = ToCircle.Dot( RayHeading );
-	float d		  = radius * radius - ( length * length - v * v );
+	float length	 = ToCircle.length();
+	float v			 = ToCircle.dot( RayHeading );
+	float d			 = radius * radius - ( length * length - v * v );
 
 	// If there was no intersection, return -1
 	return ( d < 0.0 );
@@ -106,9 +107,9 @@ inline bool DoRayCircleIntersect( Vector2 RayOrigin, Vector2 RayHeading, Vector2
 //------------------------------------------------------------------------
 inline bool GetTangentPoints( Vector2 C, float R, Vector2 P, Vector2& T1, Vector2& T2 )
 {
-	Vector2 PmC  = P - C;
-	float SqrLen = PmC.LengthSq();
-	float RSqr	  = R * R;
+	Vector2 PmC	 = P - C;
+	float SqrLen = PmC.lengthSquared();
+	float RSqr	 = R * R;
 	if( SqrLen <= RSqr )
 	{
 		// P is inside or on the circle
@@ -116,7 +117,7 @@ inline bool GetTangentPoints( Vector2 C, float R, Vector2 P, Vector2& T1, Vector
 	}
 
 	float InvSqrLen = 1 / SqrLen;
-	float Root		 = sqrt( fabs( SqrLen - RSqr ) );
+	float Root		= sqrt( fabs( SqrLen - RSqr ) );
 
 	T1.x = C.x + R * ( R * PmC.x - PmC.y * Root ) * InvSqrLen;
 	T1.y = C.y + R * ( R * PmC.y + PmC.x * Root ) * InvSqrLen;
@@ -200,9 +201,9 @@ inline bool LineIntersection2D( Vector2 A, Vector2 B, Vector2 C, Vector2 D )
 		return false;
 	}
 
-	float invBot = 1.0 / Bot;
-	float r	  = rTop * invBot;
-	float s	  = sTop * invBot;
+	float invBot = 1.0f / Bot;
+	float r		 = rTop * invBot;
+	float s		 = sTop * invBot;
 
 	if( ( r > 0 ) && ( r < 1 ) && ( s > 0 ) && ( s < 1 ) )
 	{
@@ -265,7 +266,7 @@ inline bool LineIntersection2D( Vector2 A, Vector2 B, Vector2 C, Vector2 D, floa
 //  intersection
 //-----------------------------------------------------------------
 inline bool LineIntersection2D( Vector2 A, Vector2 B, Vector2 C, Vector2 D, float& dist, Vector2& point )
-{
+                {
 
 	float rTop = ( A.y - C.y ) * ( D.x - C.x ) - ( A.x - C.x ) * ( D.y - C.y );
 	float rBot = ( B.x - A.x ) * ( D.y - C.y ) - ( B.y - A.y ) * ( D.x - C.x );
@@ -396,16 +397,8 @@ inline bool TwoCirclesEnclosed( float x1, float y1, float r1, float x2, float y2
 //
 // see http://astronomy.swin.edu.au/~pbourke/geometry/2circle/
 //------------------------------------------------------------------------
-inline bool TwoCirclesIntersectionPoints( float x1,
-										  float y1,
-										  float r1,
-										  float x2,
-										  float y2,
-										  float r2,
-										  float& p3X,
-										  float& p3Y,
-										  float& p4X,
-										  float& p4Y )
+inline bool TwoCirclesIntersectionPoints(
+	float x1, float y1, float r1, float x2, float y2, float r2, float& p3X, float& p3Y, float& p4X, float& p4Y )
 {
 	// first check to see if they overlap
 	if( !TwoCirclesOverlapped( x1, y1, r1, x2, y2, r2 ) )
@@ -497,7 +490,7 @@ inline float CircleArea( float radius )
 //------------------------------------------------------------------------
 inline bool PointInCircle( Vector2 Pos, float radius, Vector2 p )
 {
-	float DistFromCenterSquared = ( p - Pos ).LengthSq();
+	float DistFromCenterSquared = ( p - Pos ).lengthSquared();
 
 	if( DistFromCenterSquared < ( radius * radius ) )
 	{
@@ -540,11 +533,11 @@ inline bool LineSegmentCircleIntersection( Vector2 A, Vector2 B, Vector2 P, floa
 inline bool GetLineSegmentCircleClosestIntersectionPoint(
 	Vector2 A, Vector2 B, Vector2 pos, float radius, Vector2& IntersectionPoint )
 {
-	Vector2 toBNorm = Vec2DNormalize( B - A );
+	Vector2 toBNorm = normalize( B - A );
 
 	// move the circle into the local space defined by the vector B-A with origin
 	// at A
-	Vector2 LocalPos = PointToLocalSpace( pos, toBNorm, toBNorm.Perp(), A );
+	Vector2 LocalPos = PointToLocalSpace( pos, toBNorm, toBNorm.perp(), A );
 
 	bool ipFound = false;
 

@@ -41,6 +41,10 @@ public:
 	virtual void processEvents( sf::Event& event ) override;
 	virtual void wrapScreenPosition() override;
 
+	virtual Math::Vector2 getFrom() const;
+	virtual Math::Vector2 getTo() const;
+	virtual Math::Vector2 getNormal() const;
+
 private:
 	virtual void initPhysicalPart() override;
 	virtual void initGfxPart() override;
@@ -55,7 +59,7 @@ private:
 	Math::Vector2 m_from;
 	Math::Vector2 m_to;
 
-	inline static constexpr float width = 10.0f;
+	inline static constexpr float m_width = 10.0f;
 };
 } // namespace Graphics
 

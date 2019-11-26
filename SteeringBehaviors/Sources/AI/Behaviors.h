@@ -35,6 +35,10 @@ public:
 	Math::Vector2 wander();
 	Math::Vector2 obstacleAvoidance( const std::vector< Graphics::GameEntity* >& obstacles );
 	Math::Vector2 wallAvoidance( const std::vector< Graphics::Wall* >& walls );
+	Math::Vector2 getHidingPosition( const Math::Vector2& obstaclePosition,
+									 float obstacleRadius,
+									 const Math::Vector2& targetPos );
+	Math::Vector2 hide( const Graphics::Player* targetPos, std::vector< Graphics::GameEntity* >& obstacles );
 
 private:
 	void createFeelers();

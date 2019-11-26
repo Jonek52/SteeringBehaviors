@@ -9,6 +9,7 @@
 #include "..\Math\MathFunctions.h"
 #include "..\Math\Matrix.h"
 #include "..\Math\Transformations.h"
+#include "..\Math\Geometry.h"
 
 #include <math.h>
 #include <algorithm>
@@ -18,12 +19,16 @@ namespace SteeringBehaviors::AI
 Behaviors::Behaviors( Graphics::Enemy* enemy ) : m_enemy{ enemy }
 {
 	m_wanderTarget = Math::Vector2{ enemy->getPosition() };
+	m_feelers.emplace_back();
+	m_feelers.emplace_back();
+	m_feelers.emplace_back();
 }
 Math::Vector2 Behaviors::calculate()
 {
 	m_steeringForce.zero();
-	m_steeringForce += seek( m_enemy->getWorld()->getPlayer()->getPosition() );
+	m_steeringForce += hide( m_enemy->getWorld()->getPlayer(), m_enemy->getWorld()->getObstacles() );
 	m_steeringForce += obstacleAvoidance( m_enemy->getWorld()->getObstacles() );
+	m_steeringForce += wallAvoidance( m_enemy->getWorld()->getWalls() );
 	return m_steeringForce;
 }
 
@@ -185,15 +190,15 @@ Math::Vector2 Behaviors::wallAvoidance( const std::vector< Graphics::Wall* >& wa
 		{
 			if( Math::LineIntersection2D( m_enemy->getPosition(),
 										  m_feelers[ flr ],
-										  walls[ w ].from(),
-										  walls[ w ].to(),
+										  walls[ w ]->getFrom(),
+										  walls[ w ]->getTo(),
 										  distToThisIP,
 										  point ) )
 			{
 				if( distToThisIP < distToClosestIP )
 				{
 					distToClosestIP = distToThisIP;
-					closestWall		= w;
+					closestWall		= static_cast< int >( w );
 					closestPoint	= point;
 				}
 			}
@@ -203,7 +208,7 @@ Math::Vector2 Behaviors::wallAvoidance( const std::vector< Graphics::Wall* >& wa
 		{
 			Math::Vector2 overShoot = m_feelers[ flr ] - closestPoint;
 
-			steeringForce = walls[ closestWall ].normal() * overShoot.length();
+			steeringForce = walls[ closestWall ]->getNormal() * overShoot.length();
 		}
 	}
 
@@ -222,4 +227,44 @@ void Behaviors::createFeelers()
 	Math::Vec2DRotateAroundOrigin( temp, static_cast< float >( M_PI_2 ) * 0.5f );
 	m_feelers[ 2 ] = m_enemy->getPosition() + m_wallDetectionFeelersLen / 2.0f * temp;
 }
+
+SteeringBehaviors::Math::Vector2 Behaviors::getHidingPosition( const Math::Vector2& obstaclePosition,
+															   float obstacleRadius,
+															   const Math::Vector2& targetPos )
+{
+	const float distanceFromBoundary = 30.f;
+	float cumulatedDistance			 = obstacleRadius + distanceFromBoundary;
+
+	Math::Vector2 playerToObstacle = ( obstaclePosition - targetPos ).normalize();
+
+	return obstaclePosition + playerToObstacle * cumulatedDistance;
+}
+
+SteeringBehaviors::Math::Vector2 Behaviors::hide( const Graphics::Player* targetPos,
+												  std::vector< Graphics::GameEntity* >& obstacles )
+{
+	float distToClosestObstacle = std::numeric_limits< float >::max();
+	Math::Vector2 bestHidingSpot{};
+
+	for( auto& obstacle : obstacles )
+	{
+		Math::Vector2 hidingSpot
+			= getHidingPosition( obstacle->getPosition(), obstacle->getRadius(), targetPos->getPosition() );
+		float distance = Math::Vec2DDistanceSq( hidingSpot, m_enemy->getPosition() );
+
+		if( distance < distToClosestObstacle )
+		{
+			distToClosestObstacle = distance;
+			bestHidingSpot		  = hidingSpot;
+		}
+	}
+
+	if( distToClosestObstacle == std::numeric_limits< float >::max() )
+	{
+		return evade( targetPos );
+	}
+
+	return arrive( bestHidingSpot, Deceleration::FAST );
+}
+
 } // namespace SteeringBehaviors::AI

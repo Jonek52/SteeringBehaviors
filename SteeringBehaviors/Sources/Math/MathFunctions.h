@@ -37,6 +37,44 @@ inline float randomClamped()
 	return randFloat() - randFloat();
 }
 
+inline bool isEqual( float a, float b )
+{
+	if( fabs( a - b ) < 1E-12 )
+	{
+		return true;
+	}
+
+	return false;
+}
+
+inline bool isEqual( double a, double b )
+{
+	if( fabs( a - b ) < 1E-12 )
+	{
+		return true;
+	}
+
+	return false;
+}
+
+inline float Vec2DDistance (const Vector2& v1, const Vector2& v2)
+{
+
+	float ySeparation = v2.y - v1.y;
+	float xSeparation = v2.x - v1.x;
+
+	return sqrt (ySeparation * ySeparation + xSeparation * xSeparation);
+}
+
+inline float Vec2DDistanceSq (const Vector2& v1, const Vector2& v2)
+{
+
+	float ySeparation = v2.y - v1.y;
+	float xSeparation = v2.x - v1.x;
+
+	return ySeparation * ySeparation + xSeparation * xSeparation;
+}
+
 inline float toDegrees( float radians )
 {
 	float inversePI = 1.0f / static_cast< float >( M_PI );

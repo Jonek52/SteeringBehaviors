@@ -13,9 +13,7 @@ namespace SteeringBehaviors
 namespace Graphics
 {
 Wall::Wall( GameWorld* gameWorld, float maxSpeed, Orientation orientation, Side side )
-	: GameEntity{ gameWorld, maxSpeed},
-	  m_orientation{ orientation },
-	  m_side{ side }
+	: GameEntity{ gameWorld, maxSpeed }, m_orientation{ orientation }, m_side{ side }
 {
 	init();
 }
@@ -25,7 +23,6 @@ Wall::~Wall() = default;
 void Wall::init()
 {
 
-	initPhysicalPart();
 	initGfxPart();
 }
 
@@ -41,31 +38,7 @@ void Wall::update( float delta ) {}
 void Wall::processInput() {}
 void Wall::processEvents( sf::Event& event ) {}
 
-void Wall::initPhysicalPart()
-{
-
-	switch( m_side )
-	{
-	case Side::LEFT:
-		break;
-	case Side::RIGHT:
-		break;
-	case Side::UP:
-		break;
-	case Side::DOWN:
-		break;
-	default:
-		break;
-	}
-
-	switch( m_orientation )
-	{
-	case Orientation::HORIZONTAL:
-		break;
-	case Orientation::VERTICAL:
-		break;
-	}
-}
+void Wall::initPhysicalPart() {}
 
 void Wall::initGfxPart()
 {
@@ -79,35 +52,55 @@ void Wall::initGfxPart()
 	case Side::LEFT:
 		wallGfx->setPoint( 0, sf::Vector2f{ 0.0f, 0.0f } );
 		wallGfx->setPoint( 1, sf::Vector2f{ 0.0f, ( float )m_gameWorld->getWindow()->getSize().y } );
-		wallGfx->setPoint( 2, sf::Vector2f{ width, ( float )m_gameWorld->getWindow()->getSize().y } );
-		wallGfx->setPoint( 3, sf::Vector2f{ width, 0.0f } );
+		wallGfx->setPoint( 2, sf::Vector2f{ m_width, ( float )m_gameWorld->getWindow()->getSize().y } );
+		wallGfx->setPoint( 3, sf::Vector2f{ m_width, 0.0f } );
+
+		m_from	 = Math::toMathVector( wallGfx->getPoint( 3 ) );
+		m_to	 = Math::toMathVector( wallGfx->getPoint( 2 ) );
+		m_normal = Math::Vector2{ 1.0f, 0.0f };
 		break;
+
 	case Side::RIGHT:
-		wallGfx->setPoint( 0, sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x - width, 0.0f } );
+		wallGfx->setPoint( 0, sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x - m_width, 0.0f } );
 		wallGfx->setPoint( 1,
-						   sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x - width,
+						   sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x - m_width,
 										 ( float )m_gameWorld->getWindow()->getSize().y } );
 		wallGfx->setPoint( 2,
 						   sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x,
 										 ( float )m_gameWorld->getWindow()->getSize().y } );
 		wallGfx->setPoint( 3, sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x, 0.0f } );
+
+		m_from	 = Math::toMathVector( wallGfx->getPoint( 1 ) );
+		m_to	 = Math::toMathVector( wallGfx->getPoint( 0 ) );
+		m_normal = Math::Vector2{ -1.0f, 0.0f };
 		break;
+
 	case Side::UP:
 		wallGfx->setPoint( 0, sf::Vector2f{ 0.0f, 0.0f } );
-		wallGfx->setPoint( 1, sf::Vector2f{ 0.0f, width } );
-		wallGfx->setPoint( 2, sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x, width } );
+		wallGfx->setPoint( 1, sf::Vector2f{ 0.0f, m_width } );
+		wallGfx->setPoint( 2, sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x, m_width } );
 		wallGfx->setPoint( 3, sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x, 0.0f } );
+
+		m_from	 = Math::toMathVector( wallGfx->getPoint( 1 ) );
+		m_to	 = Math::toMathVector( wallGfx->getPoint( 2 ) );
+		m_normal = Math::Vector2{ 0.0f, 1.0f };
 		break;
+
 	case Side::DOWN:
-		wallGfx->setPoint( 0, sf::Vector2f{ 0.0f, ( float )m_gameWorld->getWindow()->getSize().y - width } );
+		wallGfx->setPoint( 0, sf::Vector2f{ 0.0f, ( float )m_gameWorld->getWindow()->getSize().y - m_width } );
 		wallGfx->setPoint( 1, sf::Vector2f{ 0.0f, ( float )m_gameWorld->getWindow()->getSize().y } );
 		wallGfx->setPoint( 2,
 						   sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x,
 										 ( float )m_gameWorld->getWindow()->getSize().y } );
 		wallGfx->setPoint( 3,
 						   sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x,
-										 ( float )m_gameWorld->getWindow()->getSize().y - width } );
+										 ( float )m_gameWorld->getWindow()->getSize().y - m_width } );
+
+		m_from	 = Math::toMathVector( wallGfx->getPoint( 0 ) );
+		m_to	 = Math::toMathVector( wallGfx->getPoint( 3 ) );
+		m_normal = Math::Vector2{ 0.0f, -1.0f };
 		break;
+
 	default:
 		break;
 	}
@@ -115,5 +108,21 @@ void Wall::initGfxPart()
 }
 
 void Wall::wrapScreenPosition() {}
+
+SteeringBehaviors::Math::Vector2 Wall::getFrom() const
+{
+	return m_from;
+}
+
+SteeringBehaviors::Math::Vector2 Wall::getTo() const
+{
+	return m_to;
+}
+
+SteeringBehaviors::Math::Vector2 Wall::getNormal() const
+{
+	return m_normal;
+}
+
 } // namespace Graphics
 } // namespace SteeringBehaviors
