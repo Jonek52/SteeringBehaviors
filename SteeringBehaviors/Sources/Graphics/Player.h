@@ -22,7 +22,7 @@ class GameWorld;
 class Player : public GameEntity
 {
 public:
-	Player( GameWorld* gameWorld, float maxSpeed );
+	Player (GameWorld* gameWorld, float maxSpeed, const Math::Vector2 & position);
 	virtual ~Player();
 
 	virtual void init() override;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SFML/System/Vector2.hpp"
-
+#include "Vector2.h"
 #include <assert.h>
 
 #define _USE_MATH_DEFINES
@@ -37,16 +37,6 @@ inline float randomClamped()
 	return randFloat() - randFloat();
 }
 
-inline bool isEqual( float a, float b )
-{
-	if( fabs( a - b ) < 1E-12 )
-	{
-		return true;
-	}
-
-	return false;
-}
-
 inline bool isEqual( double a, double b )
 {
 	if( fabs( a - b ) < 1E-12 )
@@ -57,22 +47,18 @@ inline bool isEqual( double a, double b )
 	return false;
 }
 
-inline float Vec2DDistance (const Vector2& v1, const Vector2& v2)
+inline Vector2 normalize( const Vector2& v )
 {
+	float vector_length = v.length();
+	Vector2 normalized{ v };
+	if( vector_length > std::numeric_limits< float >::epsilon() )
+	{
 
-	float ySeparation = v2.y - v1.y;
-	float xSeparation = v2.x - v1.x;
+		normalized.x /= vector_length;
+		normalized.y /= vector_length;
+	}
 
-	return sqrt (ySeparation * ySeparation + xSeparation * xSeparation);
-}
-
-inline float Vec2DDistanceSq (const Vector2& v1, const Vector2& v2)
-{
-
-	float ySeparation = v2.y - v1.y;
-	float xSeparation = v2.x - v1.x;
-
-	return ySeparation * ySeparation + xSeparation * xSeparation;
+	return normalized;
 }
 
 inline float toDegrees( float radians )

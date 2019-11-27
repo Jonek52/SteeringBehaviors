@@ -43,20 +43,38 @@ public:
 	virtual void processEvents( sf::Event& event ) override;
 
 	virtual void tagObstaclesWithinRange( GameEntity* object, float range );
+	virtual void tagFriendsWithinRange( Enemy* object, float range );
 
 	virtual sf::Window* getWindow() const;
 	virtual Player* getPlayer() const;
-	virtual std::vector< GameEntity* >& getObstacles();
+	virtual std::vector< Obstacle* >& getObstacles();
 	virtual std::vector< Wall* >& getWalls();
+	virtual std::vector< Enemy* >& getEnemies();
 
 protected:
 	virtual void initGameEntities();
-	virtual void tagNeightbors( GameEntity* object, std::vector< GameEntity* >& obstacles, float radius );
+	template< typename T, typename U >
+	void tagNeightbors( const U* object, const std::vector< T* >& objects, float radius )
+	{
+		for( auto& obj : objects )
+		{
+			obj->untag();
+
+			Math::Vector2 to = object->getPosition() - obj->getPosition();
+			float range		 = radius + obj->getRadius();
+
+			if( ( obj != object ) && to.lengthSquared() < range * range )
+			{
+				obj->tag();
+			}
+		}
+	}
 
 private:
 	sf::Window* m_mainWindow;
 	std::vector< GameEntity* > m_gameEntities;
-	std::vector< GameEntity* > m_obstacles;
+	std::vector< Obstacle* > m_obstacles;
+	std::vector< Enemy* > m_enemies;
 	std::vector< Wall* > m_walls;
 	Player* m_player;
 };

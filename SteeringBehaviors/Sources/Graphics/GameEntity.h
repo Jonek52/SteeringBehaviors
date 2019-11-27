@@ -22,7 +22,7 @@ class GameEntity : public Updatable, public Renderable, public Input::InputHandl
 {
 protected:
 public:
-	GameEntity( GameWorld* gameWorld, float maxSpeed );
+	GameEntity( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& position );
 	virtual ~GameEntity();
 	virtual void init()		= 0;
 	virtual void teardown() = 0;
@@ -36,6 +36,10 @@ public:
 	virtual float getSpeed() const;
 	virtual GameWorld* getWorld();
 	virtual float getRadius();
+	virtual float getMaxForce() const
+	{
+		return m_maxForce;
+	}
 
 	bool isTagged() const;
 	void tag();

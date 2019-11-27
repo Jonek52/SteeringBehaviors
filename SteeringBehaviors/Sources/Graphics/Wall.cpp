@@ -13,7 +13,7 @@ namespace SteeringBehaviors
 namespace Graphics
 {
 Wall::Wall( GameWorld* gameWorld, float maxSpeed, Orientation orientation, Side side )
-	: GameEntity{ gameWorld, maxSpeed }, m_orientation{ orientation }, m_side{ side }
+	: GameEntity{ gameWorld, maxSpeed, Math::Vector2{} }, m_orientation{ orientation }, m_side{ side }
 {
 	init();
 }
@@ -70,8 +70,8 @@ void Wall::initGfxPart()
 										 ( float )m_gameWorld->getWindow()->getSize().y } );
 		wallGfx->setPoint( 3, sf::Vector2f{ ( float )m_gameWorld->getWindow()->getSize().x, 0.0f } );
 
-		m_from	 = Math::toMathVector( wallGfx->getPoint( 1 ) );
-		m_to	 = Math::toMathVector( wallGfx->getPoint( 0 ) );
+		m_from	 = Math::toMathVector( wallGfx->getPoint( 0 ) );
+		m_to	 = Math::toMathVector( wallGfx->getPoint( 1 ) );
 		m_normal = Math::Vector2{ -1.0f, 0.0f };
 		break;
 

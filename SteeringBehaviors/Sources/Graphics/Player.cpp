@@ -15,8 +15,10 @@ namespace SteeringBehaviors
 {
 namespace Graphics
 {
-Player::Player( GameWorld* gameWorld, float maxSpeed ) : GameEntity{ gameWorld, maxSpeed }
+Player::Player( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& position )
+	: GameEntity{ gameWorld, maxSpeed, position }
 {
+	m_radius = 5.0f;
 	init();
 }
 
@@ -120,7 +122,7 @@ void Player::applyForce()
 	if( m_moveDown )
 		velocity += Math::Vector2{ 0.f, -1.f };
 
-	m_velocity = velocity.normalize() * m_maxSpeed;
+	m_velocity = Math::Vec2DNormalize( velocity ) * m_maxSpeed;
 }
 
 void Player::processInput()
@@ -196,9 +198,9 @@ void Player::initGfxPart()
 	playerGfx->setPointCount( 3 );
 
 	std::vector< sf::Vector2f > points;
-	points.emplace_back( 0.0f, -100.0f );
-	points.emplace_back( -50.0f, 0.0f );
-	points.emplace_back( 50.0f, 0.0f );
+	points.emplace_back( 0.0f, -50.0f );
+	points.emplace_back( -25.0f, 0.0f );
+	points.emplace_back( 25.0f, 0.0f );
 
 	sf::Vector2f center{ 0.0f, 0.0f };
 
@@ -213,8 +215,6 @@ void Player::initGfxPart()
 	playerGfx->setPoint( 1, points[ 1 ] - center );
 	playerGfx->setPoint( 2, points[ 2 ] - center );
 
-	playerGfx->setScale( { 0.7f, 0.7f } );
-	m_position		= Math::Vector2{ 400.f, 300.f };
 	m_graphicalBody = std::move( playerGfx );
 }
 

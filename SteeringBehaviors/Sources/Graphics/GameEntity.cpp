@@ -7,7 +7,10 @@ namespace SteeringBehaviors
 {
 namespace Graphics
 {
-GameEntity::GameEntity( GameWorld* gameWorld, float maxSpeed ) : m_gameWorld{ gameWorld }, m_maxSpeed{ maxSpeed } {}
+GameEntity::GameEntity( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& position )
+	: m_gameWorld{ gameWorld }, m_maxSpeed{ maxSpeed }, m_position{ position }
+{
+}
 
 GameEntity::~GameEntity() = default;
 
@@ -51,22 +54,22 @@ GameWorld* GameEntity::getWorld()
 	return m_gameWorld;
 }
 
-float GameEntity::getRadius ()
+float GameEntity::getRadius()
 {
 	return m_radius;
 }
 
-bool GameEntity::isTagged () const
+bool GameEntity::isTagged() const
 {
 	return m_tagged;
 }
 
-void GameEntity::tag ()
+void GameEntity::tag()
 {
 	m_tagged = true;
 }
 
-void GameEntity::untag ()
+void GameEntity::untag()
 {
 	m_tagged = false;
 }
