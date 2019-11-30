@@ -18,7 +18,7 @@ namespace SteeringBehaviors
 namespace Graphics
 {
 Player::Player( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& position )
-	: GameEntity{ gameWorld, maxSpeed, position }
+	: MovingEntity{ gameWorld, maxSpeed, 5.0f, 5.0f, position }
 {
 	m_radius = 5.0f;
 	init();

@@ -14,8 +14,8 @@ namespace SteeringBehaviors
 {
 namespace Graphics
 {
-Wall::Wall( GameWorld* gameWorld, float maxSpeed, Orientation orientation, Side side )
-	: GameEntity{ gameWorld, maxSpeed, Math::Vector2{} }, m_orientation{ orientation }, m_side{ side }
+Wall::Wall( GameWorld* gameWorld, Orientation orientation, Side side )
+	: GameEntity{ gameWorld, Math::Vector2{}, 0.0f }, m_orientation{ orientation }, m_side{ side }
 {
 	init();
 }

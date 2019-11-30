@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameEntity.h"
+#include "MovingEntity.h"
 
 #include "..\AI\Behaviors.h"
 
@@ -17,7 +17,7 @@ class Behaviors;
 namespace SteeringBehaviors::Graphics
 {
 class GameWorld;
-class Enemy : public GameEntity
+class Enemy : public MovingEntity
 {
 public:
 	Enemy( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& position );

@@ -153,6 +153,7 @@
     <ClCompile Include="Sources\Graphics\Game.cpp" />
     <ClCompile Include="Sources\Graphics\GameEntity.cpp" />
     <ClCompile Include="Sources\Graphics\GameWorld.cpp" />
+    <ClCompile Include="Sources\Graphics\MovingEntity.cpp" />
     <ClCompile Include="Sources\Graphics\Obstacle.cpp" />
     <ClCompile Include="Sources\Graphics\Player.cpp" />
     <ClCompile Include="Sources\Graphics\Wall.cpp" />
@@ -171,6 +172,7 @@
     <ClInclude Include="Sources\Graphics\Game.h" />
     <ClInclude Include="Sources\Graphics\GameEntity.h" />
     <ClInclude Include="Sources\Graphics\GameWorld.h" />
+    <ClInclude Include="Sources\Graphics\MovingEntity.h" />
     <ClInclude Include="Sources\Graphics\Obstacle.h" />
     <ClInclude Include="Sources\Graphics\Player.h" />
     <ClInclude Include="Sources\Graphics\Renderable.h" />

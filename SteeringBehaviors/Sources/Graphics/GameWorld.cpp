@@ -24,7 +24,7 @@ void GameWorld::init()
 	m_gameEntities.push_back( m_player );
 
 	shared_ptr< Enemy > enemy;
-	for( int i = 0; i < 200; ++i )
+	for( int i = 0; i < 100; ++i )
 	{
 		enemy = make_shared< Enemy >(
 			this, 150.0f, Vector2{ Math::randInRange( 300.f, 600.f ), Math::randInRange( 300.f, 600.f ) } );
@@ -32,37 +32,37 @@ void GameWorld::init()
 		m_enemies.push_back( enemy );
 	}
 
-	// auto obstacle1 = new Obstacle( this, 0.0f, Vector2{ 700.f, 300.f }, 30.0f );
-	// m_gameEntities.push_back( obstacle1 );
-	// m_obstacles.push_back( obstacle1 );
+	auto obstacle1 = make_shared< Obstacle >( this, Vector2{ 700.f, 300.f }, 30.0f );
+	m_gameEntities.push_back( obstacle1 );
+	m_obstacles.push_back( obstacle1 );
 
-	// auto obstacle2 = new Obstacle( this, 0.0f, Vector2{ 400.f, 400.f }, 20.0f );
-	// m_gameEntities.push_back( obstacle2 );
-	// m_obstacles.push_back( obstacle2 );
+	auto obstacle2 = make_shared< Obstacle >( this, Vector2{ 400.f, 400.f }, 20.0f );
+	m_gameEntities.push_back( obstacle2 );
+	m_obstacles.push_back( obstacle2 );
 
-	// auto obstacle3 = new Obstacle( this, 0.0f, Vector2{ 500.f, 200.f }, 40.0f );
-	// m_gameEntities.push_back( obstacle3 );
-	// m_obstacles.push_back( obstacle3 );
+	auto obstacle3 = make_shared< Obstacle >( this, Vector2{ 500.f, 200.f }, 40.0f );
+	m_gameEntities.push_back( obstacle3 );
+	m_obstacles.push_back( obstacle3 );
 
-	// auto obstacle4 = new Obstacle( this, 0.0f, Vector2{ 100.f, 500.f }, 30.0f );
-	// m_gameEntities.push_back( obstacle4 );
-	// m_obstacles.push_back( obstacle4 );
+	auto obstacle4 = make_shared< Obstacle >( this, Vector2{ 100.f, 500.f }, 30.0f );
+	m_gameEntities.push_back( obstacle4 );
+	m_obstacles.push_back( obstacle4 );
 
-	// auto leftWall = new Wall( this, 0.0f, Wall::Orientation::VERTICAL, Wall::Side::LEFT );
-	// m_gameEntities.push_back( leftWall );
-	// m_walls.push_back( leftWall );
+	//auto leftWall = make_shared< Wall >( this, Wall::Orientation::VERTICAL, Wall::Side::LEFT );
+	//m_gameEntities.push_back( leftWall );
+	//m_walls.push_back( leftWall );
 
-	// auto rightWall = new Wall( this, 0.0f, Wall::Orientation::VERTICAL, Wall::Side::RIGHT );
-	// m_gameEntities.push_back( rightWall );
-	// m_walls.push_back( rightWall );
+	//auto rightWall = make_shared< Wall >( this, Wall::Orientation::VERTICAL, Wall::Side::RIGHT );
+	//m_gameEntities.push_back( rightWall );
+	//m_walls.push_back( rightWall );
 
-	// auto upperWall = new Wall( this, 0.0f, Wall::Orientation::HORIZONTAL, Wall::Side::UP );
-	// m_gameEntities.push_back( upperWall );
-	// m_walls.push_back( upperWall );
+	//auto upperWall = make_shared< Wall >( this, Wall::Orientation::HORIZONTAL, Wall::Side::UP );
+	//m_gameEntities.push_back( upperWall );
+	//m_walls.push_back( upperWall );
 
-	// auto downWall = new Wall( this, 0.0f, Wall::Orientation::HORIZONTAL, Wall::Side::DOWN );
-	// m_gameEntities.push_back( downWall );
-	// m_walls.push_back( downWall );
+	//auto downWall = make_shared< Wall >( this, Wall::Orientation::HORIZONTAL, Wall::Side::DOWN );
+	//m_gameEntities.push_back( downWall );
+	//m_walls.push_back( downWall );
 }
 
 void GameWorld::teardown() {}

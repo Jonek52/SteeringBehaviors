@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameEntity.h"
+#include "MovingEntity.h"
 #include <memory>
 
 #include "chrono"
@@ -19,10 +19,10 @@ namespace SteeringBehaviors
 namespace Graphics
 {
 class GameWorld;
-class Player : public GameEntity
+class Player : public MovingEntity
 {
 public:
-	Player (GameWorld* gameWorld, float maxSpeed, const Math::Vector2 & position);
+	Player( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& position );
 	virtual ~Player();
 
 	virtual void init() override;

@@ -10,10 +10,9 @@
 namespace SteeringBehaviors::Graphics
 {
 
-Obstacle::Obstacle( GameWorld* gameWorld, float maxSpeed, Math::Vector2 position, float radius )
-	: GameEntity{ gameWorld, maxSpeed, position }
+Obstacle::Obstacle( GameWorld* gameWorld, Math::Vector2 position, float radius )
+	: GameEntity{ gameWorld, position, radius }
 {
-	m_radius   = radius;
 	init();
 }
 

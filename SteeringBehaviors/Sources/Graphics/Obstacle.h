@@ -7,7 +7,7 @@ namespace SteeringBehaviors::Graphics
 class Obstacle : public GameEntity
 {
 public:
-	Obstacle( GameWorld* gameWorld, float maxSpeed, Math::Vector2 position, float radius);
+	Obstacle( GameWorld* gameWorld, Math::Vector2 position, float radius );
 	virtual ~Obstacle();
 
 	virtual void init() override;
@@ -23,7 +23,6 @@ protected:
 	virtual void wrapScreenPosition() override;
 
 private:
-
 };
 
 } // namespace SteeringBehaviors::Graphics

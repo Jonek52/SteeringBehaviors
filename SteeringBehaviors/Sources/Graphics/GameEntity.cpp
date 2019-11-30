@@ -9,8 +9,8 @@ namespace SteeringBehaviors
 {
 namespace Graphics
 {
-GameEntity::GameEntity( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& position )
-	: m_gameWorld{ gameWorld }, m_maxSpeed{ maxSpeed }, m_position{ position }
+GameEntity::GameEntity( GameWorld* gameWorld, const Math::Vector2& position, float radius )
+	: m_gameWorld{ gameWorld }, m_position{ position }, m_radius{ radius }
 {
 }
 
@@ -21,34 +21,9 @@ Math::Vector2 GameEntity::getPosition() const
 	return m_position;
 }
 
-Math::Vector2 GameEntity::getVelocity() const
-{
-	return m_velocity;
-}
-
-Math::Vector2 GameEntity::getLookDirection() const
-{
-	return m_lookDirection;
-}
-
-SteeringBehaviors::Math::Vector2 GameEntity::getSideDirection() const
-{
-	return m_sideDirection;
-}
-
 sf::Shape* GameEntity::getGraphicalBody() const
 {
 	return m_graphicalBody.get();
-}
-
-float GameEntity::getMaxSpeed() const
-{
-	return m_maxSpeed;
-}
-
-float GameEntity::getSpeed() const
-{
-	return m_velocity.length();
 }
 
 GameWorld* GameEntity::getWorld()
