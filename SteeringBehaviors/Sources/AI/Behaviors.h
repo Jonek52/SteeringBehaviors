@@ -81,7 +81,7 @@ private:
 	float m_boxLenght;
 	float m_wanderRadius{ 1.2f };
 	float m_wanderDistance{ 2.f };
-	float m_wanderJitter{ 40.0f / 60.0f };
+	float m_wanderJitter{ 40.0f };
 
 	std::vector< Math::Vector2 > m_feelers;
 	float m_wallDetectionFeelersLen{ 40.0f };

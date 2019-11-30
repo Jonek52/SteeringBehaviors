@@ -32,6 +32,7 @@ public:
 
 	virtual void turnBehaviorOn( AI::Behaviors::Behavior behavior );
 	virtual void turnBehaviorOff( AI::Behaviors::Behavior behavior );
+	virtual float getDeltaTime() const;
 
 protected:
 	virtual void initGfxPart() override;
@@ -39,5 +40,6 @@ protected:
 	virtual void wrapScreenPosition() override;
 
 	AI::Behaviors* m_steeringBehaviors;
+	float m_deltaTime;
 };
 } // namespace SteeringBehaviors::Graphics

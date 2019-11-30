@@ -88,19 +88,18 @@ Math::Vector2 Behaviors::calculate()
 			return m_steeringForce;
 	}
 
-	if( isOn( Behavior::FLEE ) )
-	{
-		Math::Vector2 force = flee( m_enemy->getWorld()->getPlayer()->getPosition() );
-	}
-
 	if( isOn( Behavior::HIDE ) )
 	{
 		Math::Vector2 force = hide( m_hideTarget, m_enemy->getWorld()->getObstacles() );
+		if( !accumulateForce( m_steeringForce, force ) )
+			return m_steeringForce;
 	}
 
 	if( isOn( Behavior::ARRIVE ) )
 	{
 		Math::Vector2 force = arrive( m_enemy->getWorld()->getPlayer()->getPosition(), Deceleration::FAST );
+		if( !accumulateForce( m_steeringForce, force ) )
+			return m_steeringForce;
 	}
 
 	if( isOn( Behavior::WANDER ) )
@@ -121,12 +120,12 @@ Math::Vector2 Behaviors::seek( const Math::Vector2& targetPosition )
 
 Math::Vector2 Behaviors::flee( const Math::Vector2& targetPosition )
 {
-	/*const float fleeDistanceSquared = 10.0f * 10.0f;
+	const float fleeDistanceSquared = 100.0f * 100.0f;
 	if( float distance = Math::Vec2DDistanceSq( m_enemy->getPosition(), targetPosition );
 		distance > fleeDistanceSquared )
 	{
 		return Math::Vector2{};
-	}*/
+	}
 
 	Math::Vector2 desiredVelocity = Math::normalize( m_enemy->getPosition() - targetPosition ) * m_enemy->getMaxSpeed();
 	return desiredVelocity - m_enemy->getVelocity();
@@ -182,8 +181,8 @@ Math::Vector2 Behaviors::evade( const Graphics::Player* pursuer )
 
 Math::Vector2 Behaviors::wander()
 {
-
-	m_wanderTarget += Math::Vector2{ Math::randomClamped() * m_wanderJitter, Math::randomClamped() * m_wanderJitter };
+	float jitter = m_wanderJitter * m_enemy->getDeltaTime();
+	m_wanderTarget += Math::Vector2{ Math::randomClamped() * jitter, Math::randomClamped() * jitter };
 	m_wanderTarget.normalize();
 	m_wanderTarget *= m_wanderRadius;
 
@@ -550,7 +549,7 @@ SteeringBehaviors::Math::Vector2 Behaviors::cohension( const std::vector< Graphi
 		steeringForce = seek( centerOfMass );
 	}
 
-	return Vec2DNormalize(steeringForce);
+	return steeringForce;
 }
 
 bool Behaviors::accumulateForce( Math::Vector2& runningTot, Math::Vector2 forceToAdd )

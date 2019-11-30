@@ -16,7 +16,7 @@ namespace Graphics
 Enemy::Enemy( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& position )
 	: GameEntity{ gameWorld, maxSpeed, position }
 {
-	m_maxForce		= 100.0f * 4.0f;
+	m_maxForce		= 200.0f * 4.0f;
 	m_radius		= 3.0f;
 	m_lookDirection = Math::Vector2{ 0.0f, -1.0f };
 	m_sideDirection = m_lookDirection.perp();
@@ -30,10 +30,10 @@ Enemy::Enemy( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& positio
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::COHESION );
 
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WANDER );
-	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::FLEE );
+	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::FLEE );
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::EVADE );
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::OBSTACLE_AVOIDANCE );
-	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WALL_AVOIDANCE );
+	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WALL_AVOIDANCE );
 }
 
 Enemy::~Enemy() = default;
@@ -47,6 +47,8 @@ void Enemy::teardown() {}
 
 void Enemy::update( float delta )
 {
+	m_deltaTime = delta;
+
 	Math::Vector2 steeringForce = m_steeringBehaviors->calculate();
 	Math::Vector2 acceleration	= steeringForce / m_mass;
 	m_velocity += acceleration * delta;
@@ -106,5 +108,11 @@ void Enemy::turnBehaviorOff( AI::Behaviors::Behavior behavior )
 {
 	m_steeringBehaviors->turnBehaviorOff( behavior );
 }
+
+float Enemy::getDeltaTime() const
+{
+	return m_deltaTime;
+}
+
 } // namespace Graphics
 } // namespace SteeringBehaviors
