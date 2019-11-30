@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "SFML\Graphics\Shape.hpp"
 
 #include "GameEntity.h"

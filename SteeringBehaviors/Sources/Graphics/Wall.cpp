@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "SFML\Window.hpp"
 #include "SFML\Graphics\ConvexShape.hpp"
 #include "SFML\System\Vector2.hpp"

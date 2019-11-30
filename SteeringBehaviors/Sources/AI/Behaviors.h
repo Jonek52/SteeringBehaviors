@@ -1,9 +1,5 @@
 #pragma once
 
-#include "..\Math\Vector2.h"
-
-#include <vector>
-
 namespace SteeringBehaviors::Graphics
 {
 class Enemy;
@@ -41,22 +37,23 @@ public:
 		COHESION
 	};
 
-	Behaviors( Graphics::Enemy* enemy );
+	Behaviors( Graphics::Enemy& enemy );
 
-	Math::Vector2 calculate();
-	Math::Vector2 seek( const Math::Vector2& targetPos );
-	Math::Vector2 flee( const Math::Vector2& targetPos );
-	Math::Vector2 arrive( const Math::Vector2& targetPos, Deceleration deceleration );
-	Math::Vector2 pursuit( const Graphics::Player* evader );
-	Math::Vector2 evade( const Graphics::Player* pursuer );
-	Math::Vector2 wander();
-	Math::Vector2 obstacleAvoidance( const std::vector< Graphics::Obstacle* >& obstacles );
-	Math::Vector2 wallAvoidance( const std::vector< Graphics::Wall* >& walls );
-	Math::Vector2 hide( const Graphics::Player* targetPos, std::vector< Graphics::Obstacle* >& obstacles );
-	Math::Vector2 separation( const std::vector< Graphics::Enemy* >& neighbors );
-	Math::Vector2 alignment( const std::vector< Graphics::Enemy* >& neightbors );
-	Math::Vector2 cohension( const std::vector< Graphics::Enemy* >& neighbors );
-	bool accumulateForce( Math::Vector2& runningTot, Math::Vector2 forceToAdd );
+	Vector2 calculate();
+	Vector2 seek( const Vector2& targetPos );
+	Vector2 flee( const Vector2& targetPos );
+	Vector2 arrive( const Vector2& targetPos, Deceleration deceleration );
+	Vector2 pursuit( const shared_ptr< const Graphics::Player >& evader );
+	Vector2 evade( const shared_ptr< const Graphics::Player >& pursuer );
+	Vector2 wander();
+	Vector2 obstacleAvoidance( const vector< shared_ptr< Graphics::Obstacle > >& obstacles );
+	Vector2 wallAvoidance( const vector< shared_ptr< Graphics::Wall > >& walls );
+	Vector2 hide( const shared_ptr< const Graphics::Player >& targetPos,
+				  const vector< shared_ptr< Graphics::Obstacle > >& obstacles );
+	Vector2 separation( const vector< shared_ptr< Graphics::Enemy > >& neighbors );
+	Vector2 alignment( const vector< shared_ptr< Graphics::Enemy > >& neightbors );
+	Vector2 cohension( const vector< shared_ptr< Graphics::Enemy > >& neighbors );
+	bool accumulateForce( Vector2& runningTot, Vector2 forceToAdd );
 
 	void turnBehaviorOn( Behavior behavior );
 	void turnBehaviorOff( Behavior behavior );
@@ -71,28 +68,11 @@ protected:
 									 const Math::Vector2& targetPos );
 
 private:
-	Graphics::Enemy* m_enemy{};
-	Math::Vector2 m_steeringForce{};
-	Math::Vector2 m_target{};
-
-	Math::Vector2 m_wanderTarget{};
-
-	const float m_minDetectionBoxLenght{ 40.0f };
-	float m_boxLenght;
-	float m_wanderRadius{ 1.2f };
-	float m_wanderDistance{ 2.f };
-	float m_wanderJitter{ 40.0f };
-
-	std::vector< Math::Vector2 > m_feelers;
-	float m_wallDetectionFeelersLen{ 40.0f };
-	float m_viewDistance{ 50.0f };
-
-	Math::Vector2 m_seekTarget;
-	Math::Vector2 m_fleeTarget;
-	Math::Vector2 m_arriveTarget;
-	const Graphics::Player* m_evader;
-	const Graphics::Player* m_pursuer;
-	const Graphics::Player* m_hideTarget;
+	Graphics::Enemy& m_enemy;
+	Vector2 m_steeringForce;
+	Vector2 m_wanderTarget;
+	
+	vector< Vector2 > m_feelers;
 
 	bool m_seekOn{ false };
 	bool m_fleeOn{ false };
@@ -107,14 +87,21 @@ private:
 	bool m_alignmentOn{ false };
 	bool m_cohesionOn{ false };
 
-	float m_separationWeight		= 200.0f * 3.0f;
-	float m_alignmentWeight			= 200.0f * 1.0f;
-	float m_cohensionWeight			= 200.0f * 1.0f;
-	float m_wanderWeight			= 200.0f * 1.0f;
-	float m_fleeWeight				= 200.0f * 1.0f;
-	float m_evadeWeight				= 200.0f * 0.01f;
-	float m_obstacleAvoidanceWeight = 200.0f * 10.0f;
-	float m_wallAvoidanceWeight		= 200.0f * 10.0f;
-	float m_seekWeight				= 200.0f * 1.0f;
+	constexpr static inline float m_minDetectionBoxLenght{ 40.0f };
+	constexpr static inline float m_wanderRadius{ 1.2f };
+	constexpr static inline float m_wanderDistance{ 2.f };
+	constexpr static inline float m_wanderJitter{ 40.0f };
+	constexpr static inline float m_wallDetectionFeelersLen{ 40.0f };
+	constexpr static inline float m_viewDistance{ 50.0f };
+
+	constexpr static inline float m_separationWeight		= 200.0f * 2.0f;
+	constexpr static inline float m_alignmentWeight			= 200.0f * 1.0f;
+	constexpr static inline float m_cohensionWeight			= 200.0f * 1.0f;
+	constexpr static inline float m_wanderWeight			= 200.0f * 1.0f;
+	constexpr static inline float m_fleeWeight				= 200.0f * 1.0f;
+	constexpr static inline float m_evadeWeight				= 200.0f * 0.01f;
+	constexpr static inline float m_obstacleAvoidanceWeight = 200.0f * 10.0f;
+	constexpr static inline float m_wallAvoidanceWeight		= 200.0f * 10.0f;
+	constexpr static inline float m_seekWeight				= 200.0f * 1.0f;
 };
 } // namespace SteeringBehaviors::AI

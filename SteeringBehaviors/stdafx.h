@@ -12,3 +12,6 @@ using std::make_unique;
 using std::shared_ptr;
 using std::unique_ptr;
 using std::weak_ptr;
+
+#include "Sources/Math/Vector2.h"
+using SteeringBehaviors::Math::Vector2;

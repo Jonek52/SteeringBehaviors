@@ -6,8 +6,6 @@
 
 #include "..\Math\Vector2.h"
 
-#include <memory>
-
 namespace sf
 {
 class Shape;
@@ -27,10 +25,10 @@ public:
 	virtual void init()		= 0;
 	virtual void teardown() = 0;
 
-	virtual Math::Vector2 getPosition() const;
-	virtual Math::Vector2 getVelocity() const;
-	virtual Math::Vector2 getLookDirection() const;
-	virtual Math::Vector2 getSideDirection() const;
+	virtual Vector2 getPosition() const;
+	virtual Vector2 getVelocity() const;
+	virtual Vector2 getLookDirection() const;
+	virtual Vector2 getSideDirection() const;
 	virtual sf::Shape* getGraphicalBody() const;
 	virtual float getMaxSpeed() const;
 	virtual float getSpeed() const;
@@ -55,9 +53,9 @@ protected:
 	GameWorld* m_gameWorld;
 	std::unique_ptr< sf::Shape > m_graphicalBody;
 
-	Math::Vector2 m_velocity;
-	Math::Vector2 m_lookDirection;
-	Math::Vector2 m_sideDirection;
+	Vector2 m_velocity;
+	Vector2 m_lookDirection;
+	Vector2 m_sideDirection;
 
 	float m_mass{ 1.0f };
 	float m_radius;
@@ -67,8 +65,8 @@ protected:
 
 	bool m_tagged{ false };
 
-	Math::Vector2 m_position;
-	Math::Vector2 m_targetDirection;
+	Vector2 m_position;
+	Vector2 m_targetDirection;
 };
 
 } // namespace Graphics

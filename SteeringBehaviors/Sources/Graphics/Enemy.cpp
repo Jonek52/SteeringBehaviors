@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "SFML\Graphics\CircleShape.hpp"
 #include "SFML\Graphics\Color.hpp"
 #include <SFML\Graphics.hpp>
@@ -17,13 +19,13 @@ Enemy::Enemy( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& positio
 	: GameEntity{ gameWorld, maxSpeed, position }
 {
 	m_maxForce		= 200.0f * 4.0f;
-	m_radius		= 3.0f;
+	m_radius		= 1.0f;
 	m_lookDirection = Math::Vector2{ 0.0f, -1.0f };
 	m_sideDirection = m_lookDirection.perp();
 
 	init();
 
-	m_steeringBehaviors = new AI::Behaviors( this );
+	m_steeringBehaviors = new AI::Behaviors( *this );
 	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::SEEK );
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::SEPARATION );
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::ALIGNMENT );

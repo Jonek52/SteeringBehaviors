@@ -1,9 +1,11 @@
+#include "stdafx.h"
+
 #include <SFML\Graphics.hpp>
 #include "Sources\Graphics\Game.h"
 
 #include <memory>
 
-float deltaTime{ 1.f / 60.f };
+static float deltaTime{ 1.f / 60.f };
 
 int main()
 {
@@ -33,9 +35,9 @@ int main()
 		game.update( deltaTime );
 		game.render( window );
 
-		current_time								  = std::chrono::high_resolution_clock::now();
+		current_time										  = std::chrono::high_resolution_clock::now();
 		std::chrono::duration< float, std::milli > elapsed_ms = current_time - start;
-		deltaTime									  = elapsed_ms.count() / 1000.f;
+		deltaTime											  = elapsed_ms.count() / 1000.f;
 	}
 
 	return 0;

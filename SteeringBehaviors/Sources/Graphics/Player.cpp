@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include <SFML\Graphics\ConvexShape.hpp>
 #include <SFML\Graphics\CircleShape.hpp>
 #include <SFML\Graphics.hpp>

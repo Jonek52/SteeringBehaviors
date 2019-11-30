@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "SFML\Graphics\CircleShape.hpp"
 #include "SFML\Graphics.hpp"
 #include "SFML\System\Vector2.hpp"

@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "SFML\Graphics\CircleShape.hpp"
 #include "SFML\Window\Window.hpp"
 
@@ -6,6 +8,7 @@
 #include "Enemy.h"
 #include "Wall.h"
 #include "Obstacle.h"
+
 #include "..\Math\MathFunctions.h"
 
 namespace SteeringBehaviors
@@ -17,32 +20,33 @@ GameWorld::GameWorld( sf::Window* window ) : m_mainWindow{ window } {}
 
 void GameWorld::init()
 {
-	m_player = new Player( this, 300.0f, { 400.f, 300.f } );
+	m_player = make_shared< Player >( this, 300.0f, Vector2{ 400.f, 300.f } );
 	m_gameEntities.push_back( m_player );
 
-	Enemy* enemy;
+	shared_ptr< Enemy > enemy;
 	for( int i = 0; i < 200; ++i )
 	{
-		enemy = new Enemy( this, 250.0f, { Math::randInRange( 300.f, 600.f ), Math::randInRange( 300.f, 600.f ) } );
+		enemy = make_shared< Enemy >(
+			this, 150.0f, Vector2{ Math::randInRange( 300.f, 600.f ), Math::randInRange( 300.f, 600.f ) } );
 		m_gameEntities.push_back( enemy );
 		m_enemies.push_back( enemy );
 	}
 
-	auto obstacle1 = new Obstacle( this, 0.0f, Math::Vector2{ 700.f, 300.f }, 30.0f );
-	m_gameEntities.push_back( obstacle1 );
-	m_obstacles.push_back( obstacle1 );
+	// auto obstacle1 = new Obstacle( this, 0.0f, Vector2{ 700.f, 300.f }, 30.0f );
+	// m_gameEntities.push_back( obstacle1 );
+	// m_obstacles.push_back( obstacle1 );
 
-	auto obstacle2 = new Obstacle( this, 0.0f, Math::Vector2{ 400.f, 400.f }, 20.0f );
-	m_gameEntities.push_back( obstacle2 );
-	m_obstacles.push_back( obstacle2 );
+	// auto obstacle2 = new Obstacle( this, 0.0f, Vector2{ 400.f, 400.f }, 20.0f );
+	// m_gameEntities.push_back( obstacle2 );
+	// m_obstacles.push_back( obstacle2 );
 
-	auto obstacle3 = new Obstacle( this, 0.0f, Math::Vector2{ 500.f, 200.f }, 40.0f );
-	m_gameEntities.push_back( obstacle3 );
-	m_obstacles.push_back( obstacle3 );
+	// auto obstacle3 = new Obstacle( this, 0.0f, Vector2{ 500.f, 200.f }, 40.0f );
+	// m_gameEntities.push_back( obstacle3 );
+	// m_obstacles.push_back( obstacle3 );
 
-	auto obstacle4 = new Obstacle( this, 0.0f, Math::Vector2{ 100.f, 500.f }, 30.0f );
-	m_gameEntities.push_back( obstacle4 );
-	m_obstacles.push_back( obstacle4 );
+	// auto obstacle4 = new Obstacle( this, 0.0f, Vector2{ 100.f, 500.f }, 30.0f );
+	// m_gameEntities.push_back( obstacle4 );
+	// m_obstacles.push_back( obstacle4 );
 
 	// auto leftWall = new Wall( this, 0.0f, Wall::Orientation::VERTICAL, Wall::Side::LEFT );
 	// m_gameEntities.push_back( leftWall );
@@ -103,32 +107,32 @@ void GameWorld::processEvents( sf::Event& event )
 	}
 }
 
-void GameWorld::tagObstaclesWithinRange( GameEntity* object, float range )
+void GameWorld::tagObstaclesWithinRange( const GameEntity& object, float range )
 {
 	tagNeightbors( object, m_obstacles, range );
 }
 
-void GameWorld::tagFriendsWithinRange( Enemy* object, float range )
+void GameWorld::tagFriendsWithinRange( const Enemy& object, float range )
 {
 	tagNeightbors( object, m_enemies, range );
 }
 
-Player* GameWorld::getPlayer() const
+shared_ptr< Player >& GameWorld::getPlayer()
 {
 	return m_player;
 }
 
-std::vector< Obstacle* >& GameWorld::getObstacles()
+const vector< shared_ptr< Obstacle > >& GameWorld::getObstacles()
 {
 	return m_obstacles;
 }
 
-std::vector< Wall* >& GameWorld::getWalls()
+const vector< shared_ptr< Wall > >& GameWorld::getWalls()
 {
 	return m_walls;
 }
 
-std::vector< Enemy* >& GameWorld::getEnemies()
+const vector< shared_ptr< Enemy > >& GameWorld::getEnemies()
 {
 	return m_enemies;
 }
