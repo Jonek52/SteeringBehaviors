@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include <SFML\Graphics\Font.hpp>
+#include <SFML\Graphics\Text.hpp>
 #include <SFML\Graphics\ConvexShape.hpp>
 #include <SFML\Graphics\CircleShape.hpp>
 #include <SFML\Graphics.hpp>
@@ -8,6 +10,8 @@
 #include "SFML\Graphics\Vertex.hpp"
 
 #include "GameWorld.h"
+#include "Obstacle.h"
+#include "Enemy.h"
 #include "Player.h"
 #include "../Math/MathFunctions.h"
 
@@ -18,9 +22,8 @@ namespace SteeringBehaviors
 namespace Graphics
 {
 Player::Player( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& position )
-	: MovingEntity{ gameWorld, maxSpeed, 5.0f, 5.0f, position }
+	: MovingEntity{ gameWorld, maxSpeed, 2000.0f, 30.0f, position }
 {
-	m_radius = 5.0f;
 	init();
 }
 
@@ -31,6 +34,7 @@ void Player::init()
 	m_lookDirection = Math::Vector2{ 0.f, -1.f };
 	m_sideDirection = m_lookDirection.perp();
 
+	initText();
 	initGfxPart();
 	initPhysicalPart();
 }
@@ -39,11 +43,14 @@ void Player::teardown() {}
 
 void Player::update( float delta )
 {
-
-	applyForce();
+	handleCollisions( m_gameWorld->getObstacles() );
 	move( delta );
 	rotate();
 	handleShooting( delta );
+	handleLineDrawing( delta );
+	handleCollisionWithEnemy();
+	updateHealth();
+	shouldDie();
 }
 
 void Player::handleShooting( float delta )
@@ -57,39 +64,19 @@ void Player::handleShooting( float delta )
 		}
 		else
 		{
-			m_counter  = std::chrono::steady_clock::now();
-			onCooldown = true;
-			m_drawLine = true;
-			shootBall();
+			m_shotCooldown = std::chrono::steady_clock::now();
+			onCooldown	   = true;
+			m_drawLine	   = true;
+			m_createLine   = true;
+			checkIntersectionWithEnemies();
 		}
 	}
-}
-
-void Player::shootBall()
-{
-	spawnBall();
-}
-
-void Player::spawnBall()
-{
-	// m_ball.graphicalBody = std::make_unique< sf::CircleShape >( m_ball.radius, 12 );
-
-	// sf::Vector2f origin{ 0.f, 0.f };
-	// for( int i = 0; i < m_ball.graphicalBody->getPointCount(); ++i )
-	//{
-	//	origin += m_ball.graphicalBody->getPoint( i );
-	//}
-
-	// origin /= static_cast< float >( m_ball.graphicalBody->getPointCount() );
-
-	// m_ball.graphicalBody->setOrigin( origin );
-	// m_ball.graphicalBody->setFillColor( sf::Color::Yellow );
 }
 
 void Player::wait()
 {
 	auto now	 = std::chrono::steady_clock::now();
-	auto elapsed = std::chrono::duration_cast< std::chrono::milliseconds >( now - m_counter );
+	auto elapsed = std::chrono::duration_cast< std::chrono::milliseconds >( now - m_shotCooldown );
 
 	if( elapsed >= std::chrono::milliseconds( 1500 ) )
 	{
@@ -100,31 +87,50 @@ void Player::wait()
 void Player::render( RenderWindow* window )
 {
 	window->draw( *m_graphicalBody );
+
+	if( m_drawLine )
+	{
+		window->draw( m_line.data(), 2, sf::Lines );
+	}
+
+	window->draw( *m_healthText );
 }
 
 void Player::move( float delta )
 {
+	Vector2 moveForce	 = calculateForce();
+	Vector2 acceleration = moveForce / m_mass;
+
+	m_velocity += acceleration * delta;
+	m_velocity.truncate( m_maxSpeed );
+
 	m_position += m_velocity * delta;
+
+	if( acceleration.length() <= 0.0f )
+	{
+		m_velocity *= 0.9f;
+	}
 	m_graphicalBody->setPosition( Math::toSFMLVector( m_position ) );
+	WrapAround( m_position, m_gameWorld->getWindow()->getSize().x, m_gameWorld->getWindow()->getSize().y );
 }
 
-void Player::applyForce()
+Vector2 Player::calculateForce()
 {
-	Math::Vector2 velocity{ 0.f, 0.f };
+	Math::Vector2 force{ 0.f, 0.f };
 
 	if( m_moveLeft )
-		velocity += Math::Vector2{ -1.f, 0.f };
+		force += Math::Vector2{ -1.f, 0.f };
 
 	if( m_moveRight )
-		velocity += Math::Vector2{ 1.f, 0.f };
+		force += Math::Vector2{ 1.f, 0.f };
 
 	if( m_moveUp )
-		velocity += Math::Vector2{ 0.f, 1.f };
+		force += Math::Vector2{ 0.f, 1.f };
 
 	if( m_moveDown )
-		velocity += Math::Vector2{ 0.f, -1.f };
+		force += Math::Vector2{ 0.f, -1.f };
 
-	m_velocity = Math::Vec2DNormalize( velocity ) * m_maxSpeed;
+	return Math::Vec2DNormalize( force ) * m_maxForce;
 }
 
 void Player::processInput()
@@ -135,9 +141,9 @@ void Player::processInput()
 
 void Player::processEvents( sf::Event& event )
 {
-	if( event.type == sf::Event::KeyPressed )
+	if( event.type == sf::Event::MouseButtonPressed )
 	{
-		if( event.key.code == sf::Keyboard::Space )
+		if( event.key.code == sf::Mouse::Left )
 		{
 			wantsToShoot = true;
 		}
@@ -245,6 +251,130 @@ void Player::wrapScreenPosition()
 	else if( currentPosY < 0.0f + playerShape->getRadius() )
 	{
 		currentPosY = m_gameWorld->getWindow()->getSize().y - playerShape->getRadius();
+	}
+}
+
+void Player::handleCollisions( const vector< shared_ptr< Obstacle > >& obstacles )
+{
+	m_gameWorld->tagObstaclesWithinRange( *this, m_radius );
+
+	for( const auto& obstacle : obstacles )
+	{
+		if( obstacle->isTagged() )
+		{
+			Vector2 playerToObstacle = getPosition() - obstacle->getPosition();
+			Vector2 moveVector		 = Math::Vec2DNormalize( playerToObstacle ) * ( obstacle->getRadius() + m_radius );
+			m_position				 = obstacle->getPosition() + moveVector;
+		}
+	}
+}
+
+void Player::handleLineDrawing( float deltaTime )
+{
+	if( m_drawLine )
+	{
+		if( m_createLine )
+		{
+			m_line[ 0 ] = sf::Vertex{ Math::toSFMLVector( m_position + m_lookDirection * m_radius ) };
+			m_line[ 1 ] = sf::Vertex{ Math::toSFMLVector( m_position + m_lookDirection * 800.0f ) };
+			m_createLineParam += deltaTime;
+			if( m_createLineParam / s_createLineTime <= 1.0f )
+			{
+				sf::Uint8 alpha = static_cast< sf::Uint8 >(
+					Math::lerp< float >( 0, 255, ( m_createLineParam / s_createLineTime ) ) );
+				m_line[ 0 ].color = sf::Color( sf::Color{ 255, 0, 0, alpha } );
+				m_line[ 1 ].color = sf::Color( sf::Color{ 255, 0, 0, alpha } );
+			}
+			else
+			{
+				m_createLine	  = false;
+				m_hideLine		  = true;
+				m_createLineParam = 0.0f;
+			}
+		}
+
+		if( m_hideLine )
+		{
+			m_line[ 0 ] = sf::Vertex{ Math::toSFMLVector( m_position + m_lookDirection * m_radius ) };
+			m_line[ 1 ] = sf::Vertex{ Math::toSFMLVector( m_position + m_lookDirection * 800.0f ) };
+			m_hideLineParam += deltaTime;
+
+			if( m_hideLineParam / s_hideLineTime <= 1.0f )
+			{
+				sf::Uint8 alpha
+					= static_cast< sf::Uint8 >( Math::lerp< float >( 255, 0, ( m_hideLineParam / s_hideLineTime ) ) );
+				sf::Uint8 oneMinusAlpha = static_cast< sf::Uint8 >( 1 - alpha );
+				m_line[ 0 ].color		= sf::Color( sf::Color{ 255, oneMinusAlpha, oneMinusAlpha, alpha } );
+				m_line[ 1 ].color		= sf::Color( sf::Color{ 255, oneMinusAlpha, oneMinusAlpha, alpha } );
+			}
+
+			else
+			{
+				m_drawLine		= false;
+				m_hideLine		= false;
+				m_hideLineParam = 0.0f;
+			}
+		}
+	}
+}
+
+void Player::checkIntersectionWithEnemies() const
+{
+	m_gameWorld->markIntersectedEnemies( *this );
+}
+
+void Player::initText()
+{
+	m_font = make_unique< sf::Font >();
+	if( !m_font->loadFromFile( "C:\\Users\\Jonasz\\Documents\\Visual Studio "
+							   "2019\\Projects\\SteeringBehaviors\\arial.ttf" ) )
+	{
+		std::cout << "Error loading font" << std::endl;
+	}
+
+	m_healthText = make_unique< sf::Text >();
+	m_healthText->setFont( *m_font );
+
+	m_healthText->setString( std::to_string( m_hpPoints ) );
+
+	m_healthText->setCharacterSize( 24 );
+
+	m_healthText->setFillColor( sf::Color::Red );
+
+	m_healthText->setStyle( sf::Text::Bold );
+}
+
+void Player::handleCollisionWithEnemy()
+{
+	const vector< shared_ptr< Enemy > >& enemies = m_gameWorld->getEnemies();
+
+	for( const auto& enemy : enemies )
+	{
+		Vector2 toEnemy	  = enemy->getPosition() - m_position;
+		float totalRadius = enemy->getRadius() + m_radius;
+
+		if( toEnemy.lengthSquared() < totalRadius * totalRadius )
+		{
+			m_healtCounter -= 0.1f;
+			if( m_healtCounter < 0 )
+			{
+				m_healtCounter = 0.0f;
+			}
+		}
+	}
+}
+
+void Player::updateHealth()
+{
+	m_hpPoints = static_cast< int >( m_healtCounter );
+	m_healthText->setString( std::to_string( m_hpPoints ) );
+}
+
+void Player::shouldDie()
+{
+	if( m_hpPoints == 0 )
+	{
+		m_toDelete = true;
 	}
 }
 

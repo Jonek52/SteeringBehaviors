@@ -34,6 +34,8 @@ public:
 	bool isTagged() const;
 	void tag();
 	void untag();
+	bool toDelete() const;
+	void markAsDeleted();
 
 protected:
 	virtual void initGfxPart()		  = 0;
@@ -46,6 +48,7 @@ protected:
 
 	float m_radius;
 	bool m_tagged{ false };
+	bool m_toDelete{ false };
 
 	Vector2 m_position;
 	Vector2 m_targetDirection;

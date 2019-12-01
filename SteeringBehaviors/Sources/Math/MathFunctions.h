@@ -13,6 +13,18 @@ namespace SteeringBehaviors
 namespace Math
 {
 
+template< typename T >
+T lerp( T v0, T v1, float param )
+{
+	return ( 1 - param ) * v0 + param * v1;
+}
+
+template<>
+inline float lerp( float v0, float v1, float param )
+{
+	return ( 1.0f - param ) * v0 + param * v1;
+}
+
 inline float randFloat()
 {
 	return ( ( rand() ) / ( RAND_MAX + 1.0f ) );

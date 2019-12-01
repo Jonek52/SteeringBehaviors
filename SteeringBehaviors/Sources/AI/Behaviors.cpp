@@ -29,6 +29,8 @@ Vector2 Behaviors::calculate()
 {
 	m_steeringForce.zero();
 
+	checkForBehaviorsChanges( m_enemy.getWorld()->getEnemies() );
+
 	if( isOn( Behavior::WALL_AVOIDANCE ) )
 	{
 		Vector2 force = wallAvoidance( m_enemy.getWorld()->getWalls() ) * m_wallAvoidanceWeight;
@@ -58,7 +60,6 @@ Vector2 Behaviors::calculate()
 
 	if( isOn( Behavior::SEPARATION ) || isOn( Behavior::ALIGNMENT ) || isOn( Behavior::COHESION ) )
 	{
-		m_enemy.getWorld()->tagFriendsWithinRange( m_enemy, m_viewDistance );
 
 		if( isOn( Behavior::SEPARATION ) )
 		{
@@ -89,9 +90,16 @@ Vector2 Behaviors::calculate()
 			return m_steeringForce;
 	}
 
+	if( isOn( Behavior::PURSUIT ) )
+	{
+		Vector2 force = pursuit( m_enemy.getWorld()->getPlayer() ) * m_pursuitWeight;
+		if( !accumulateForce( m_steeringForce, force ) )
+			return m_steeringForce;
+	}
+
 	if( isOn( Behavior::HIDE ) )
 	{
-		Vector2 force = hide( m_enemy.getWorld()->getPlayer(), m_enemy.getWorld()->getObstacles() );
+		Vector2 force = hide( m_enemy.getWorld()->getPlayer(), m_enemy.getWorld()->getObstacles() ) * m_hideWeight;
 		if( !accumulateForce( m_steeringForce, force ) )
 			return m_steeringForce;
 	}
@@ -317,7 +325,7 @@ void Behaviors::createFeelers()
 
 Vector2 Behaviors::getHidingPosition( const Vector2& obstaclePosition, float obstacleRadius, const Vector2& targetPos )
 {
-	const float distanceFromBoundary = 30.f;
+	const float distanceFromBoundary = 50.f;
 	float cumulatedDistance			 = obstacleRadius + distanceFromBoundary;
 
 	Vector2 playerToObstacle = Math::Vec2DNormalize( obstaclePosition - targetPos );
@@ -328,6 +336,19 @@ Vector2 Behaviors::getHidingPosition( const Vector2& obstaclePosition, float obs
 Vector2 Behaviors::hide( const shared_ptr< const Graphics::Player >& targetPos,
 						 const vector< shared_ptr< Graphics::Obstacle > >& obstacles )
 {
+	Vector2 playerLocalPosition = Math::PointToLocalSpace(
+		targetPos->getPosition(), m_enemy.getLookDirection(), m_enemy.getSideDirection(), m_enemy.getPosition() );
+	float dot = playerLocalPosition.dot( Math::Vector2{ 1.0f, 0.0f } );
+
+	Vector2 enemyLocalPosition = Math::PointToLocalSpace(
+		m_enemy.getPosition(), targetPos->getLookDirection(), targetPos->getSideDirection(), targetPos->getPosition() );
+	float dot2 = enemyLocalPosition.dot( Math::Vector2{ 1.0f, 0.0f } );
+
+	if( dot < 0 && dot2 < 0 )
+	{
+		return Math::Vector2{};
+	}
+
 	float distToClosestObstacle = std::numeric_limits< float >::max();
 	Vector2 bestHidingSpot{};
 
@@ -355,7 +376,6 @@ Vector2 Behaviors::hide( const shared_ptr< const Graphics::Player >& targetPos,
 Vector2 Behaviors::separation( const vector< shared_ptr< Graphics::Enemy > >& neighbors )
 {
 	Vector2 steeringForce{};
-
 	for( const auto& neighbor : neighbors )
 	{
 		if( neighbor.get() != &m_enemy && neighbor->isTagged() )
@@ -373,11 +393,11 @@ Vector2 Behaviors::alignment( const vector< shared_ptr< Graphics::Enemy > >& nei
 	Vector2 averageHeading;
 	int neightborCount{ 0 };
 
-	for( int a = 0; a < neightbors.size(); ++a )
+	for( const auto& neightbor : neightbors )
 	{
-		if( ( neightbors[ a ].get() != &m_enemy ) && ( neightbors[ a ]->isTagged() ) )
+		if( ( neightbor.get() != &m_enemy ) && ( neightbor->isTagged() ) )
 		{
-			averageHeading += neightbors[ a ]->getLookDirection();
+			averageHeading += neightbor->getLookDirection();
 			neightborCount++;
 		}
 	}
@@ -398,11 +418,11 @@ Vector2 Behaviors::cohension( const vector< shared_ptr< Graphics::Enemy > >& nei
 
 	int neightborCount{ 0 };
 
-	for( int a = 0; a < neighbors.size(); ++a )
+	for( const auto& neighbor : neighbors )
 	{
-		if( ( neighbors[ a ].get() != &m_enemy ) && ( neighbors[ a ]->isTagged() ) )
+		if( ( neighbor.get() != &m_enemy ) && ( neighbor->isTagged() ) )
 		{
-			centerOfMass += neighbors[ a ]->getPosition();
+			centerOfMass += neighbor->getPosition();
 			++neightborCount;
 		}
 	}
@@ -572,6 +592,33 @@ bool Behaviors::accumulateForce( Vector2& runningTot, Vector2 forceToAdd )
 	}
 
 	return true;
+}
+
+void Behaviors::checkForBehaviorsChanges( const vector< shared_ptr< Graphics::Enemy > >& enemies )
+{
+	m_enemy.getWorld()->tagFriendsWithinRange( m_enemy, m_viewDistance );
+
+	int neighborCounter{ 0 };
+
+	for( const auto& neighbor : enemies )
+	{
+		if( neighbor->isTagged() )
+		{
+			neighborCounter++;
+		}
+	}
+
+	if( neighborCounter >= attackLimit || enemies.size() < attackLimit )
+	{
+		turnBehaviorOff( Behavior::FLEE );
+		turnBehaviorOff( Behavior::EVADE );
+		// turnBehaviorOff( Behavior::COHESION );
+		// turnBehaviorOff( Behavior::ALIGNMENT );
+		// turnBehaviorOff( Behavior::SEPARATION );
+		turnBehaviorOff( Behavior::HIDE );
+		turnBehaviorOn( Behavior::SEEK );
+		turnBehaviorOn( Behavior::PURSUIT );
+	}
 }
 
 } // namespace SteeringBehaviors::AI

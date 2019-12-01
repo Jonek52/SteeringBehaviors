@@ -16,7 +16,7 @@ namespace Graphics
 {
 
 Enemy::Enemy( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& position )
-	: MovingEntity{ gameWorld, maxSpeed, 200.0f * 4.0f, 3.0f, position }
+	: MovingEntity{ gameWorld, maxSpeed, 200.0f * 4.0f, 5.0f, position }
 {
 	m_lookDirection = Math::Vector2{ 0.0f, -1.0f };
 	m_sideDirection = m_lookDirection.perp();
@@ -24,16 +24,18 @@ Enemy::Enemy( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& positio
 	init();
 
 	m_steeringBehaviors = new AI::Behaviors( *this );
-	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::SEEK );
+	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::SEEK );
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::SEPARATION );
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::ALIGNMENT );
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::COHESION );
 
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WANDER );
-	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::FLEE );
-	//m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::EVADE );
+	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::PURSUIT );
+	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::FLEE );
+	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::EVADE );
+	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::HIDE );
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::OBSTACLE_AVOIDANCE );
-	//m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WALL_AVOIDANCE );
+	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WALL_AVOIDANCE );
 }
 
 Enemy::~Enemy() = default;

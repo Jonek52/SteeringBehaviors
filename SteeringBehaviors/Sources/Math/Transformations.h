@@ -121,16 +121,13 @@ inline Vector2 PointToLocalSpace( const Vector2& point,
 								  const Vector2& AgentPosition )
 {
 
-	// make a copy of the point
 	Vector2 TransPoint = point;
 
-	// create a transformation matrix
 	C2DMatrix matTransform;
 
 	float Tx = -AgentPosition.dot( AgentHeading );
 	float Ty = -AgentPosition.dot( AgentSide );
 
-	// create the transformation matrix
 	matTransform._11( AgentHeading.x );
 	matTransform._12( AgentSide.x );
 	matTransform._21( AgentHeading.y );
@@ -138,7 +135,6 @@ inline Vector2 PointToLocalSpace( const Vector2& point,
 	matTransform._31( Tx );
 	matTransform._32( Ty );
 
-	// now transform the vertices
 	matTransform.TransformVector2s( TransPoint );
 
 	return TransPoint;

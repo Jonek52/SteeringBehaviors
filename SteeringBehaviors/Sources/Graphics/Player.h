@@ -1,7 +1,6 @@
 #pragma once
 
 #include "MovingEntity.h"
-#include <memory>
 
 #include "chrono"
 #include <array>
@@ -12,6 +11,8 @@ namespace sf
 {
 class Shape;
 class CircleShape;
+class Text;
+class Font;
 } // namespace sf
 
 namespace SteeringBehaviors
@@ -19,37 +20,42 @@ namespace SteeringBehaviors
 namespace Graphics
 {
 class GameWorld;
-class Player : public MovingEntity
+class Obstacle;
+class Player final : public MovingEntity
 {
 public:
 	Player( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& position );
 	virtual ~Player();
 
-	virtual void init() override;
-	virtual void teardown() override;
-	virtual void render( RenderWindow* window ) override;
-	virtual void update( float delta ) override;
+	void init() override;
+	void teardown() override;
+	void render( RenderWindow* window ) override;
+	void update( float delta ) override;
 
-	virtual void processInput() override;
-	virtual void processEvents( sf::Event& event ) override;
+	void processInput() override;
+	void processEvents( sf::Event& event ) override;
 
 protected:
-	virtual void initGfxPart() override;
-	virtual void initPhysicalPart() override;
+	void initGfxPart() override;
+	void initText();
+	void initPhysicalPart() override;
 
-	virtual void wrapScreenPosition() override;
-	virtual void handleKeyboard();
-	virtual void handleMouse();
-	virtual void handleShooting( float delta );
+	void wrapScreenPosition() override;
+	void handleKeyboard();
+	void handleMouse();
+	void handleShooting( float delta );
 	void move( float delta );
 	void rotate();
-
-	virtual void applyForce();
-	virtual void shootBall();
-	virtual void spawnBall();
+	Vector2 calculateForce();
 
 private:
 	void wait();
+	void handleCollisions( const vector< shared_ptr< Obstacle > >& obstacles );
+	void handleLineDrawing( float deltaTime );
+	void checkIntersectionWithEnemies() const;
+	void handleCollisionWithEnemy();
+	void updateHealth();
+	void shouldDie();
 
 private:
 	bool m_moveUp{ false };
@@ -62,9 +68,22 @@ private:
 	bool onCooldown{ false };
 
 	bool m_drawLine{ false };
+
+	bool m_createLine{ false };
+	bool m_hideLine{ false };
 	std::array< sf::Vertex, 2 > m_line;
 
-	std::chrono::steady_clock::time_point m_counter;
+	std::chrono::steady_clock::time_point m_shotCooldown;
+	float m_createLineParam{ 0.0f };
+	float m_hideLineParam{ 0.0f };
+
+	constexpr static inline float s_createLineTime{ 0.5f };
+	constexpr static inline float s_hideLineTime{ 1.0f };
+
+	float m_healtCounter{ 100.0f };
+	int m_hpPoints{ 100 };
+	unique_ptr< sf::Text > m_healthText;
+	unique_ptr< sf::Font > m_font;
 };
 
 } // namespace Graphics

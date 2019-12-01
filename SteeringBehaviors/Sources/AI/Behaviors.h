@@ -48,12 +48,13 @@ public:
 	Vector2 wander();
 	Vector2 obstacleAvoidance( const vector< shared_ptr< Graphics::Obstacle > >& obstacles );
 	Vector2 wallAvoidance( const vector< shared_ptr< Graphics::Wall > >& walls );
-	Vector2 hide( const shared_ptr< const Graphics::Player >& targetPos,
+	Vector2 hide( const shared_ptr< const Graphics::Player >& player,
 				  const vector< shared_ptr< Graphics::Obstacle > >& obstacles );
 	Vector2 separation( const vector< shared_ptr< Graphics::Enemy > >& neighbors );
 	Vector2 alignment( const vector< shared_ptr< Graphics::Enemy > >& neightbors );
 	Vector2 cohension( const vector< shared_ptr< Graphics::Enemy > >& neighbors );
 	bool accumulateForce( Vector2& runningTot, Vector2 forceToAdd );
+	void checkForBehaviorsChanges( const vector< shared_ptr< Graphics::Enemy > >& enemies );
 
 	void turnBehaviorOn( Behavior behavior );
 	void turnBehaviorOff( Behavior behavior );
@@ -71,7 +72,7 @@ private:
 	Graphics::Enemy& m_enemy;
 	Vector2 m_steeringForce;
 	Vector2 m_wanderTarget;
-	
+
 	vector< Vector2 > m_feelers;
 
 	bool m_seekOn{ false };
@@ -94,14 +95,18 @@ private:
 	constexpr static inline float m_wallDetectionFeelersLen{ 40.0f };
 	constexpr static inline float m_viewDistance{ 50.0f };
 
-	constexpr static inline float m_separationWeight		= 200.0f * 2.0f;
+	constexpr static inline float m_separationWeight		= 200.0f * 8.0f;
 	constexpr static inline float m_alignmentWeight			= 200.0f * 1.0f;
 	constexpr static inline float m_cohensionWeight			= 200.0f * 1.0f;
 	constexpr static inline float m_wanderWeight			= 200.0f * 1.0f;
-	constexpr static inline float m_fleeWeight				= 200.0f * 1.0f;
+	constexpr static inline float m_fleeWeight				= 200.0f * 5.0f;
 	constexpr static inline float m_evadeWeight				= 200.0f * 0.01f;
 	constexpr static inline float m_obstacleAvoidanceWeight = 200.0f * 10.0f;
 	constexpr static inline float m_wallAvoidanceWeight		= 200.0f * 10.0f;
 	constexpr static inline float m_seekWeight				= 200.0f * 1.0f;
+	constexpr static inline float m_hideWeight				= 200.0f * 1.0f;
+	constexpr static inline float m_pursuitWeight			= 200.0f * 1.0f;
+	constexpr static inline int attackLimit					= 20;
+
 };
 } // namespace SteeringBehaviors::AI

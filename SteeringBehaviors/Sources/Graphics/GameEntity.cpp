@@ -16,6 +16,11 @@ GameEntity::GameEntity( GameWorld* gameWorld, const Math::Vector2& position, flo
 
 GameEntity::~GameEntity() = default;
 
+void GameEntity::markAsDeleted()
+{
+	m_toDelete = true;
+}
+
 Math::Vector2 GameEntity::getPosition() const
 {
 	return m_position;
@@ -49,6 +54,11 @@ void GameEntity::tag()
 void GameEntity::untag()
 {
 	m_tagged = false;
+}
+
+bool GameEntity::toDelete() const
+{
+	return m_toDelete;
 }
 
 } // namespace Graphics

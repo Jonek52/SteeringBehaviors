@@ -10,6 +10,7 @@
 #include "Obstacle.h"
 
 #include "..\Math\MathFunctions.h"
+#include "..\Math\Geometry.h"
 
 namespace SteeringBehaviors
 {
@@ -20,14 +21,14 @@ GameWorld::GameWorld( sf::Window* window ) : m_mainWindow{ window } {}
 
 void GameWorld::init()
 {
-	m_player = make_shared< Player >( this, 300.0f, Vector2{ 400.f, 300.f } );
+	m_player = make_shared< Player >( this, 400.0f, Vector2{ 100.f, 100.f } );
 	m_gameEntities.push_back( m_player );
 
 	shared_ptr< Enemy > enemy;
-	for( int i = 0; i < 100; ++i )
+	for( int i = 0; i < 50; ++i )
 	{
 		enemy = make_shared< Enemy >(
-			this, 150.0f, Vector2{ Math::randInRange( 300.f, 600.f ), Math::randInRange( 300.f, 600.f ) } );
+			this, 150.0f, Vector2{ Math::randInRange( 0.0f, 800.f ), Math::randInRange( 0.f, 600.f ) } );
 		m_gameEntities.push_back( enemy );
 		m_enemies.push_back( enemy );
 	}
@@ -48,21 +49,28 @@ void GameWorld::init()
 	m_gameEntities.push_back( obstacle4 );
 	m_obstacles.push_back( obstacle4 );
 
-	//auto leftWall = make_shared< Wall >( this, Wall::Orientation::VERTICAL, Wall::Side::LEFT );
-	//m_gameEntities.push_back( leftWall );
-	//m_walls.push_back( leftWall );
+	auto obstacle5 = make_shared< Obstacle >( this, Vector2{ 200.f, 200.f }, 30.0f );
+	m_gameEntities.push_back( obstacle5 );
+	m_obstacles.push_back( obstacle5 );
 
-	//auto rightWall = make_shared< Wall >( this, Wall::Orientation::VERTICAL, Wall::Side::RIGHT );
-	//m_gameEntities.push_back( rightWall );
-	//m_walls.push_back( rightWall );
+	auto obstacle6 = make_shared< Obstacle > (this, Vector2 { 650.f, 200.f }, 10.0f);
+	m_gameEntities.push_back (obstacle6);
+	m_obstacles.push_back (obstacle6);
+	// auto leftWall = make_shared< Wall >( this, Wall::Orientation::VERTICAL, Wall::Side::LEFT );
+	// m_gameEntities.push_back( leftWall );
+	// m_walls.push_back( leftWall );
 
-	//auto upperWall = make_shared< Wall >( this, Wall::Orientation::HORIZONTAL, Wall::Side::UP );
-	//m_gameEntities.push_back( upperWall );
-	//m_walls.push_back( upperWall );
+	// auto rightWall = make_shared< Wall >( this, Wall::Orientation::VERTICAL, Wall::Side::RIGHT );
+	// m_gameEntities.push_back( rightWall );
+	// m_walls.push_back( rightWall );
 
-	//auto downWall = make_shared< Wall >( this, Wall::Orientation::HORIZONTAL, Wall::Side::DOWN );
-	//m_gameEntities.push_back( downWall );
-	//m_walls.push_back( downWall );
+	// auto upperWall = make_shared< Wall >( this, Wall::Orientation::HORIZONTAL, Wall::Side::UP );
+	// m_gameEntities.push_back( upperWall );
+	// m_walls.push_back( upperWall );
+
+	// auto downWall = make_shared< Wall >( this, Wall::Orientation::HORIZONTAL, Wall::Side::DOWN );
+	// m_gameEntities.push_back( downWall );
+	// m_walls.push_back( downWall );
 }
 
 void GameWorld::teardown() {}
@@ -81,6 +89,15 @@ void GameWorld::update( float delta )
 	{
 		gameEntity->update( delta );
 	}
+	auto lastEnemyIter = std::remove_if (
+		m_enemies.begin (), m_enemies.end (), [](shared_ptr< Enemy >& enemy) { return enemy->toDelete (); });
+	m_enemies.erase (lastEnemyIter, m_enemies.end ());
+
+	auto lastEntetiesIter = std::remove_if( m_gameEntities.begin(),
+											m_gameEntities.end(),
+											[]( shared_ptr< GameEntity >& entity ) { return entity->toDelete(); } );
+
+	m_gameEntities.erase( lastEntetiesIter, m_gameEntities.end() );
 }
 
 void GameWorld::initGameEntities()
@@ -115,6 +132,40 @@ void GameWorld::tagObstaclesWithinRange( const GameEntity& object, float range )
 void GameWorld::tagFriendsWithinRange( const Enemy& object, float range )
 {
 	tagNeightbors( object, m_enemies, range );
+}
+
+void GameWorld::markIntersectedEnemies( const Player& player )
+{
+	Vector2 rayOrigin			   = player.getPosition();
+	Vector2 rayDirection		   = player.getLookDirection();
+	float distSqrtToClosesObstacle = std::numeric_limits< float >::max();
+
+	for( auto& enemy : m_enemies )
+	{
+		if( !Math::DoRayCircleIntersect( rayOrigin, rayDirection, enemy->getPosition(), enemy->getRadius() ) )
+		{
+			for( const auto& obstacle : m_obstacles )
+			{
+				if( !Math::DoRayCircleIntersect(
+						rayOrigin, rayDirection, obstacle->getPosition(), obstacle->getRadius() ) )
+				{
+					Vector2 toObstacle = obstacle->getPosition() - player.getPosition();
+
+					if( toObstacle.lengthSquared() < distSqrtToClosesObstacle )
+					{
+						distSqrtToClosesObstacle = toObstacle.lengthSquared();
+					}
+				}
+			}
+
+			Vector2 toEnemy = enemy->getPosition() - player.getPosition();
+
+			if( toEnemy.lengthSquared() < distSqrtToClosesObstacle )
+			{
+				enemy->markAsDeleted();
+			}
+		}
+	}
 }
 
 shared_ptr< Player >& GameWorld::getPlayer()

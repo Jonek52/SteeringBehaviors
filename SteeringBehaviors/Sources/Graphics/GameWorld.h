@@ -36,6 +36,7 @@ public:
 
 	virtual void tagObstaclesWithinRange( const GameEntity& object, float range );
 	virtual void tagFriendsWithinRange( const Enemy& object, float range );
+	virtual void markIntersectedEnemies( const Player& object );
 
 	virtual sf::Window* getWindow() const;
 
