@@ -2,10 +2,9 @@
 
 #include "MovingEntity.h"
 
-#include "chrono"
-#include <array>
-
 #include "SFML/Graphics/Vertex.hpp"
+
+#include <array>
 
 namespace sf
 {
@@ -77,11 +76,11 @@ private:
 	float m_createLineParam{ 0.0f };
 	float m_hideLineParam{ 0.0f };
 
-	constexpr static inline float s_createLineTime{ 0.5f };
-	constexpr static inline float s_hideLineTime{ 1.0f };
+	constexpr static inline float s_createLineTime{ 0.2f };
+	constexpr static inline float s_hideLineTime{ 0.2f };
 
-	float m_healtCounter{ 100.0f };
-	int m_hpPoints{ 100 };
+	float m_healtCounter{ 102.0f };
+	int m_hpPoints{ 102 };
 	unique_ptr< sf::Text > m_healthText;
 	unique_ptr< sf::Font > m_font;
 };

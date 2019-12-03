@@ -130,7 +130,7 @@ Vector2 Behaviors::seek( const Vector2& targetPosition )
 Vector2 Behaviors::flee( const Vector2& targetPosition )
 {
 	const float fleeDistanceSquared = 100.0f * 100.0f;
-	if( float distance = Math::Vec2DDistanceSq( m_enemy.getPosition(), targetPosition );
+	if( float distance = Math::distanceSquared( m_enemy.getPosition(), targetPosition );
 		distance > fleeDistanceSquared )
 	{
 		return Vector2{};
@@ -328,7 +328,7 @@ Vector2 Behaviors::getHidingPosition( const Vector2& obstaclePosition, float obs
 	const float distanceFromBoundary = 50.f;
 	float cumulatedDistance			 = obstacleRadius + distanceFromBoundary;
 
-	Vector2 playerToObstacle = Math::Vec2DNormalize( obstaclePosition - targetPos );
+	Vector2 playerToObstacle = Math::normalize( obstaclePosition - targetPos );
 
 	return obstaclePosition + playerToObstacle * cumulatedDistance;
 }
@@ -356,7 +356,7 @@ Vector2 Behaviors::hide( const shared_ptr< const Graphics::Player >& targetPos,
 	{
 		Vector2 hidingSpot
 			= getHidingPosition( obstacle->getPosition(), obstacle->getRadius(), targetPos->getPosition() );
-		float distance = Math::Vec2DDistanceSq( hidingSpot, m_enemy.getPosition() );
+		float distance = Math::distanceSquared( hidingSpot, m_enemy.getPosition() );
 
 		if( distance < distToClosestObstacle )
 		{

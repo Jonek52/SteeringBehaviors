@@ -4,8 +4,6 @@
 #include "Renderable.h"
 #include "..\Input\InputHandling.h"
 
-#include <memory>
-
 namespace sf
 {
 class Window;
@@ -33,7 +31,7 @@ public:
 	virtual void init();
 	virtual void teardown();
 	virtual void render( sf::RenderWindow* window ) override;
-	virtual void update(float delta) override;
+	virtual void update( float delta ) override;
 	virtual void processInput() override;
 	virtual void processEvents( sf::Event& event ) override;
 

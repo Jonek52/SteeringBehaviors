@@ -56,6 +56,7 @@ void GameWorld::init()
 	auto obstacle6 = make_shared< Obstacle > (this, Vector2 { 650.f, 200.f }, 10.0f);
 	m_gameEntities.push_back (obstacle6);
 	m_obstacles.push_back (obstacle6);
+
 	// auto leftWall = make_shared< Wall >( this, Wall::Orientation::VERTICAL, Wall::Side::LEFT );
 	// m_gameEntities.push_back( leftWall );
 	// m_walls.push_back( leftWall );

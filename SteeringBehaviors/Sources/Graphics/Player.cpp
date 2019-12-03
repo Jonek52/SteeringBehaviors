@@ -130,7 +130,7 @@ Vector2 Player::calculateForce()
 	if( m_moveDown )
 		force += Math::Vector2{ 0.f, -1.f };
 
-	return Math::Vec2DNormalize( force ) * m_maxForce;
+	return Math::normalize( force ) * m_maxForce;
 }
 
 void Player::processInput()
@@ -263,7 +263,7 @@ void Player::handleCollisions( const vector< shared_ptr< Obstacle > >& obstacles
 		if( obstacle->isTagged() )
 		{
 			Vector2 playerToObstacle = getPosition() - obstacle->getPosition();
-			Vector2 moveVector		 = Math::Vec2DNormalize( playerToObstacle ) * ( obstacle->getRadius() + m_radius );
+			Vector2 moveVector		 = Math::normalize( playerToObstacle ) * ( obstacle->getRadius() + m_radius );
 			m_position				 = obstacle->getPosition() + moveVector;
 		}
 	}

@@ -59,20 +59,6 @@ inline bool isEqual( double a, double b )
 	return false;
 }
 
-inline Vector2 normalize( const Vector2& v )
-{
-	float vector_length = v.length();
-	Vector2 normalized{ v };
-	if( vector_length > std::numeric_limits< float >::epsilon() )
-	{
-
-		normalized.x /= vector_length;
-		normalized.y /= vector_length;
-	}
-
-	return normalized;
-}
-
 inline float toDegrees( float radians )
 {
 	float inversePI = 1.0f / static_cast< float >( M_PI );
