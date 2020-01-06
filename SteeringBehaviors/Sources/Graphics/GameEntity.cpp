@@ -10,7 +10,7 @@ namespace SteeringBehaviors
 namespace Graphics
 {
 GameEntity::GameEntity( GameWorld* gameWorld, const Math::Vector2& position, float radius )
-	: m_gameWorld{ gameWorld }, m_radius{ radius }, m_position{ position }
+	: m_gameWorld{ gameWorld }, m_position{ position }, m_radius{ radius }
 {
 }
 

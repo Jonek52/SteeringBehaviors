@@ -143,7 +143,7 @@ void Player::processEvents( sf::Event& event )
 {
 	if( event.type == sf::Event::MouseButtonPressed )
 	{
-		if( event.mouseButton.button == sf::Mouse::Left )
+		if( event.key.code == sf::Mouse::Left )
 		{
 			wantsToShoot = true;
 		}

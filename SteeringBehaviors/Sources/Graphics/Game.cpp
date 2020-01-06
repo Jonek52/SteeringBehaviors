@@ -12,7 +12,7 @@ namespace Graphics
 {
 Game::Game( sf::Window* window ) : m_mainWindow{ window }, m_gameWorld{ nullptr }
 {
-	init(); // NOLINT
+	init();
 };
 
 Game::~Game() = default;
