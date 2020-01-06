@@ -372,7 +372,7 @@ void Player::updateHealth()
 
 void Player::shouldDie()
 {
-	if( m_hpPoints == 0 )
+	if( m_hpPoints <= 0 )
 	{
 		m_toDelete = true;
 	}

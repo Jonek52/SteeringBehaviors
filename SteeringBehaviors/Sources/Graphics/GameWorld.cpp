@@ -25,7 +25,7 @@ void GameWorld::init()
 	m_gameEntities.push_back( m_player );
 
 	shared_ptr< Enemy > enemy;
-	for( int i = 0; i < 50; ++i )
+	for( int i = 0; i < 10; ++i )
 	{
 		enemy = make_shared< Enemy >(
 			this, 150.0f, Vector2{ Math::randInRange( 0.0f, 800.f ), Math::randInRange( 0.f, 600.f ) } );
@@ -33,27 +33,27 @@ void GameWorld::init()
 		m_enemies.push_back( enemy );
 	}
 
-	auto obstacle1 = make_shared< Obstacle >( this, Vector2{ 700.f, 300.f }, 30.0f );
+	auto obstacle1 = make_shared< Obstacle >( this, Vector2{ 700.f, 300.f }, 40.0f );
 	m_gameEntities.push_back( obstacle1 );
 	m_obstacles.push_back( obstacle1 );
 
-	auto obstacle2 = make_shared< Obstacle >( this, Vector2{ 400.f, 400.f }, 20.0f );
+	auto obstacle2 = make_shared< Obstacle >( this, Vector2{ 400.f, 400.f }, 30.0f );
 	m_gameEntities.push_back( obstacle2 );
 	m_obstacles.push_back( obstacle2 );
 
-	auto obstacle3 = make_shared< Obstacle >( this, Vector2{ 500.f, 200.f }, 40.0f );
+	auto obstacle3 = make_shared< Obstacle >( this, Vector2{ 500.f, 200.f }, 50.0f );
 	m_gameEntities.push_back( obstacle3 );
 	m_obstacles.push_back( obstacle3 );
 
-	auto obstacle4 = make_shared< Obstacle >( this, Vector2{ 100.f, 500.f }, 30.0f );
+	auto obstacle4 = make_shared< Obstacle >( this, Vector2{ 100.f, 500.f }, 40.0f );
 	m_gameEntities.push_back( obstacle4 );
 	m_obstacles.push_back( obstacle4 );
 
-	auto obstacle5 = make_shared< Obstacle >( this, Vector2{ 200.f, 200.f }, 30.0f );
+	auto obstacle5 = make_shared< Obstacle >( this, Vector2{ 200.f, 200.f }, 40.0f );
 	m_gameEntities.push_back( obstacle5 );
 	m_obstacles.push_back( obstacle5 );
 
-	auto obstacle6 = make_shared< Obstacle > (this, Vector2 { 650.f, 200.f }, 10.0f);
+	auto obstacle6 = make_shared< Obstacle > (this, Vector2 { 650.f, 200.f }, 20.0f);
 	m_gameEntities.push_back (obstacle6);
 	m_obstacles.push_back (obstacle6);
 

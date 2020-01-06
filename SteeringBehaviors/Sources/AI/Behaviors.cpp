@@ -129,7 +129,7 @@ Vector2 Behaviors::seek( const Vector2& targetPosition )
 
 Vector2 Behaviors::flee( const Vector2& targetPosition )
 {
-	const float fleeDistanceSquared = 100.0f * 100.0f;
+	const float fleeDistanceSquared = 200.0f * 200.0f;
 	if( float distance = Math::distanceSquared( m_enemy.getPosition(), targetPosition );
 		distance > fleeDistanceSquared )
 	{
@@ -180,7 +180,7 @@ Vector2 Behaviors::evade( const shared_ptr< const Graphics::Player >& pursuer )
 {
 	Vector2 toPursuer = pursuer->getPosition() - m_enemy.getPosition();
 
-	const float ThreatRange = 100.0f;
+	const float ThreatRange = 200.0f;
 	if( toPursuer.lengthSquared() > ThreatRange * ThreatRange )
 		return Vector2();
 
@@ -336,18 +336,18 @@ Vector2 Behaviors::getHidingPosition( const Vector2& obstaclePosition, float obs
 Vector2 Behaviors::hide( const shared_ptr< const Graphics::Player >& targetPos,
 						 const vector< shared_ptr< Graphics::Obstacle > >& obstacles )
 {
-	Vector2 playerLocalPosition = Math::PointToLocalSpace(
-		targetPos->getPosition(), m_enemy.getLookDirection(), m_enemy.getSideDirection(), m_enemy.getPosition() );
-	float dot = playerLocalPosition.dot( Math::Vector2{ 1.0f, 0.0f } );
+	// Vector2 playerLocalPosition = Math::PointToLocalSpace(
+	//	targetPos->getPosition(), m_enemy.getLookDirection(), m_enemy.getSideDirection(), m_enemy.getPosition() );
+	// float dot = playerLocalPosition.dot( Math::Vector2{ 1.0f, 0.0f } );
 
-	Vector2 enemyLocalPosition = Math::PointToLocalSpace(
-		m_enemy.getPosition(), targetPos->getLookDirection(), targetPos->getSideDirection(), targetPos->getPosition() );
-	float dot2 = enemyLocalPosition.dot( Math::Vector2{ 1.0f, 0.0f } );
+	// Vector2 enemyLocalPosition = Math::PointToLocalSpace(
+	//	m_enemy.getPosition(), targetPos->getLookDirection(), targetPos->getSideDirection(), targetPos->getPosition() );
+	// float dot2 = enemyLocalPosition.dot( Math::Vector2{ 1.0f, 0.0f } );
 
-	if( dot < 0 && dot2 < 0 )
-	{
-		return Math::Vector2{};
-	}
+	// if( dot < 0 && dot2 < 0 )
+	//{
+	//	return Math::Vector2{};
+	//}
 
 	float distToClosestObstacle = std::numeric_limits< float >::max();
 	Vector2 bestHidingSpot{};
@@ -596,7 +596,7 @@ bool Behaviors::accumulateForce( Vector2& runningTot, Vector2 forceToAdd )
 
 void Behaviors::checkForBehaviorsChanges( const vector< shared_ptr< Graphics::Enemy > >& enemies )
 {
-	m_enemy.getWorld()->tagFriendsWithinRange( m_enemy, m_viewDistance );
+	m_enemy.getWorld()->tagFriendsWithinRange( m_enemy, friendDistance );
 
 	int neighborCounter{ 0 };
 
@@ -610,11 +610,12 @@ void Behaviors::checkForBehaviorsChanges( const vector< shared_ptr< Graphics::En
 
 	if( neighborCounter >= attackLimit || enemies.size() < attackLimit )
 	{
+		m_enemy.disableCounter ();
 		turnBehaviorOff( Behavior::FLEE );
 		turnBehaviorOff( Behavior::EVADE );
-		// turnBehaviorOff( Behavior::COHESION );
-		// turnBehaviorOff( Behavior::ALIGNMENT );
-		// turnBehaviorOff( Behavior::SEPARATION );
+		turnBehaviorOn( Behavior::COHESION );
+		turnBehaviorOn( Behavior::ALIGNMENT );
+		turnBehaviorOn( Behavior::SEPARATION );
 		turnBehaviorOff( Behavior::HIDE );
 		turnBehaviorOn( Behavior::SEEK );
 		turnBehaviorOn( Behavior::PURSUIT );

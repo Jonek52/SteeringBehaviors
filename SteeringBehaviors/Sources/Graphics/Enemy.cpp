@@ -10,14 +10,18 @@
 #include "..\Math\MathFunctions.h"
 #include "..\AI\Behaviors.h"
 
+#include <iostream>
+
 namespace SteeringBehaviors
 {
 namespace Graphics
 {
 
 Enemy::Enemy( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& position )
-	: MovingEntity{ gameWorld, maxSpeed, 200.0f * 4.0f, 5.0f, position }
+	: MovingEntity{ gameWorld, maxSpeed, 200.0f * 4.0f, 10.0f, position },
+	  m_behaviorSwitchTime{ static_cast< int >( std::floor( Math::randFloat() * 10.0F + 5.0F ) ) * 1000 }
 {
+
 	m_lookDirection = Math::Vector2{ 0.0f, -1.0f };
 	m_sideDirection = m_lookDirection.perp();
 
@@ -25,17 +29,25 @@ Enemy::Enemy( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& positio
 
 	m_steeringBehaviors = new AI::Behaviors( *this );
 	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::SEEK );
-	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::SEPARATION );
-	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::ALIGNMENT );
-	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::COHESION );
+	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::SEPARATION );
+	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::ALIGNMENT );
+	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::COHESION );
 
-	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WANDER );
+	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WANDER );
 	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::PURSUIT );
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::FLEE );
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::EVADE );
-	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::HIDE );
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::OBSTACLE_AVOIDANCE );
 	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WALL_AVOIDANCE );
+
+	float randomNumber = std::floor( Math::randFloat() * 10 );
+	std::cout << randomNumber << std::endl;
+	if( static_cast< int >( randomNumber ) % 2 == 0 )
+		m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::HIDE );
+	else
+		m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WANDER );
+
+	m_behaviorCooldown = std::chrono::steady_clock::now();
 }
 
 Enemy::~Enemy() = default;
@@ -51,6 +63,8 @@ void Enemy::update( float delta )
 {
 	m_deltaTime = delta;
 
+	handleCollisionsWithOtherEnemies( m_gameWorld->getEnemies() );
+
 	Math::Vector2 steeringForce = m_steeringBehaviors->calculate();
 	Math::Vector2 acceleration	= steeringForce / m_mass;
 	m_velocity += acceleration * delta;
@@ -64,6 +78,9 @@ void Enemy::update( float delta )
 		m_lookDirection = Math::normalize( m_velocity );
 		m_sideDirection = m_lookDirection.perp();
 	}
+
+	if( m_shouldCount )
+		behaviorCooldownCounter();
 
 	WrapAround( m_position, m_gameWorld->getWindow()->getSize().x, m_gameWorld->getWindow()->getSize().y );
 }
@@ -114,6 +131,55 @@ void Enemy::turnBehaviorOff( AI::Behaviors::Behavior behavior )
 float Enemy::getDeltaTime() const
 {
 	return m_deltaTime;
+}
+
+void Enemy::switchBehavior()
+{
+	if( m_steeringBehaviors->isOn( AI::Behaviors::Behavior::WANDER ) )
+	{
+		m_steeringBehaviors->turnBehaviorOff( AI::Behaviors::Behavior::WANDER );
+		m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::HIDE );
+		std::cout << "Switched to hide \n";
+	}
+
+	else
+	{
+		m_steeringBehaviors->turnBehaviorOff( AI::Behaviors::Behavior::HIDE );
+		m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WANDER );
+		std::cout << "Switched to wander\n";
+	}
+
+	m_behaviorCooldown = std::chrono::steady_clock::now();
+}
+
+void Enemy::behaviorCooldownCounter()
+{
+	auto now	 = std::chrono::steady_clock::now();
+	auto elapsed = std::chrono::duration_cast< std::chrono::milliseconds >( now - m_behaviorCooldown );
+
+	if( elapsed >= std::chrono::milliseconds( m_behaviorSwitchTime ) )
+	{
+		switchBehavior();
+	}
+}
+
+void Enemy::handleCollisionsWithOtherEnemies( const vector< shared_ptr< Enemy > >& enemies )
+{
+	m_gameWorld->tagFriendsWithinRange( *this, m_radius );
+
+	for( const auto& enemy : enemies )
+	{
+		if( enemy->isTagged() )
+		{
+			Vector2 enemytoEnemy = getPosition() - enemy->getPosition();
+			Vector2 moveVector	 = Math::normalize( enemytoEnemy ) * ( enemy->getRadius() + m_radius );
+			m_position			 = enemy->getPosition() + moveVector;
+		}
+	}
+}
+void Enemy::disableCounter()
+{
+	m_shouldCount = false;
 }
 
 } // namespace Graphics

@@ -33,13 +33,20 @@ public:
 	virtual void turnBehaviorOn( AI::Behaviors::Behavior behavior );
 	virtual void turnBehaviorOff( AI::Behaviors::Behavior behavior );
 	virtual float getDeltaTime() const;
+	void disableCounter();
 
 protected:
 	virtual void initGfxPart() override;
 	virtual void initPhysicalPart() override;
 	virtual void wrapScreenPosition() override;
+	virtual void switchBehavior();
+	void behaviorCooldownCounter();
+	void handleCollisionsWithOtherEnemies( const vector< shared_ptr< Enemy > >& enemies );
 
 	AI::Behaviors* m_steeringBehaviors;
 	float m_deltaTime;
+	const int m_behaviorSwitchTime;
+	std::chrono::steady_clock::time_point m_behaviorCooldown;
+	bool m_shouldCount{ true };
 };
 } // namespace SteeringBehaviors::Graphics
