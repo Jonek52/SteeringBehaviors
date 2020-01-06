@@ -79,8 +79,8 @@ private:
 	constexpr static inline float s_createLineTime{ 0.2f };
 	constexpr static inline float s_hideLineTime{ 0.2f };
 
-	float m_healtCounter{ 102.0f };
-	int m_hpPoints{ 102 };
+	float m_healtCounter{ 100.0f };
+	int m_hpPoints{ 100 };
 	unique_ptr< sf::Text > m_healthText;
 	unique_ptr< sf::Font > m_font;
 };

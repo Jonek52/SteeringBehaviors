@@ -38,7 +38,7 @@ void Obstacle::processEvents( sf::Event& event ) {}
 
 void Obstacle::initGfxPart()
 {
-	auto shape = std::make_unique< sf::CircleShape >( m_radius, 10 );
+	auto shape = std::make_unique< sf::CircleShape >( m_radius, 20 );
 	shape->setFillColor( sf::Color::Blue );
 
 	sf::Vector2f center{ 0.f, 0.f };

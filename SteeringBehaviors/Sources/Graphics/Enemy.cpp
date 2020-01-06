@@ -41,7 +41,6 @@ Enemy::Enemy( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& positio
 	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WALL_AVOIDANCE );
 
 	float randomNumber = std::floor( Math::randFloat() * 10 );
-	std::cout << randomNumber << std::endl;
 	if( static_cast< int >( randomNumber ) % 2 == 0 )
 		m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::HIDE );
 	else

@@ -28,7 +28,7 @@ void GameWorld::init()
 	for( int i = 0; i < 10; ++i )
 	{
 		enemy = make_shared< Enemy >(
-			this, 150.0f, Vector2{ Math::randInRange( 0.0f, 800.f ), Math::randInRange( 0.f, 600.f ) } );
+			this, 200.0f, Vector2{ Math::randInRange( 0.0f, 800.f ), Math::randInRange( 0.f, 600.f ) } );
 		m_gameEntities.push_back( enemy );
 		m_enemies.push_back( enemy );
 	}
