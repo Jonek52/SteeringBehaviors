@@ -45,7 +45,7 @@ protected:
 
 	AI::Behaviors* m_steeringBehaviors;
 	float m_deltaTime;
-	const int m_behaviorSwitchTime;
+	int m_behaviorSwitchTime;
 	std::chrono::steady_clock::time_point m_behaviorCooldown;
 	bool m_shouldCount{ true };
 };

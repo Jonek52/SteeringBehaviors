@@ -100,13 +100,14 @@ private:
 	constexpr static inline float m_cohensionWeight			= 200.0f * 1.0f;
 	constexpr static inline float m_wanderWeight			= 200.0f * 1.0f;
 	constexpr static inline float m_fleeWeight				= 200.0f * 5.0f;
-	constexpr static inline float m_evadeWeight				= 200.0f * 0.01f;
+	constexpr static inline float m_evadeWeight				= 200.0f * 0.1f;
 	constexpr static inline float m_obstacleAvoidanceWeight = 200.0f * 10.0f;
 	constexpr static inline float m_wallAvoidanceWeight		= 200.0f * 10.0f;
 	constexpr static inline float m_seekWeight				= 200.0f * 1.0f;
-	constexpr static inline float m_hideWeight				= 200.0f * 1.0f;
+	constexpr static inline float m_hideWeight				= 200.0f * .01f;
 	constexpr static inline float m_pursuitWeight			= 200.0f * 1.0f;
-	constexpr static inline int attackLimit					= 3;
+
+	constexpr static inline int attackLimit = 5;
 	constexpr static inline float friendDistance{ 100.0F };
 };
 } // namespace SteeringBehaviors::AI
