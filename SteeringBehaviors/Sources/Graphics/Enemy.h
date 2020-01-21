@@ -48,5 +48,6 @@ protected:
 	int m_behaviorSwitchTime;
 	std::chrono::steady_clock::time_point m_behaviorCooldown;
 	bool m_shouldCount{ true };
+	bool hide{ true };
 };
 } // namespace SteeringBehaviors::Graphics

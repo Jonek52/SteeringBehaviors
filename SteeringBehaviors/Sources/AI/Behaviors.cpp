@@ -336,19 +336,6 @@ Vector2 Behaviors::getHidingPosition( const Vector2& obstaclePosition, float obs
 Vector2 Behaviors::hide( const shared_ptr< const Graphics::Player >& targetPos,
 						 const vector< shared_ptr< Graphics::Obstacle > >& obstacles )
 {
-	// Vector2 playerLocalPosition = Math::PointToLocalSpace(
-	//	targetPos->getPosition(), m_enemy.getLookDirection(), m_enemy.getSideDirection(), m_enemy.getPosition() );
-	// float dot = playerLocalPosition.dot( Math::Vector2{ 1.0f, 0.0f } );
-
-	// Vector2 enemyLocalPosition = Math::PointToLocalSpace(
-	//	m_enemy.getPosition(), targetPos->getLookDirection(), targetPos->getSideDirection(), targetPos->getPosition() );
-	// float dot2 = enemyLocalPosition.dot( Math::Vector2{ 1.0f, 0.0f } );
-
-	// if( dot < 0 && dot2 < 0 )
-	//{
-	//	return Math::Vector2{};
-	//}
-
 	float distToClosestObstacle = std::numeric_limits< float >::max();
 	Vector2 bestHidingSpot{};
 

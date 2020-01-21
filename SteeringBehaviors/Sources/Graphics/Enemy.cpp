@@ -28,23 +28,13 @@ Enemy::Enemy( GameWorld* gameWorld, float maxSpeed, const Math::Vector2& positio
 	init();
 
 	m_steeringBehaviors = new AI::Behaviors( *this );
-	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::SEEK );
-	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::SEPARATION );
-	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::ALIGNMENT );
-	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::COHESION );
 
-	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WANDER );
-	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::PURSUIT );
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::FLEE );
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::EVADE );
 	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::OBSTACLE_AVOIDANCE );
-	// m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WALL_AVOIDANCE );
 
-	float randomNumber = std::floor( Math::randFloat() * 10 );
-	if( static_cast< int >( randomNumber ) % 2 == 0 )
-		m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::HIDE );
-	else
-		m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WANDER );
+	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WANDER );
+	m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::HIDE );
 
 	m_behaviorCooldown = std::chrono::steady_clock::now();
 }
@@ -78,8 +68,8 @@ void Enemy::update( float delta )
 		m_sideDirection = m_lookDirection.perp();
 	}
 
-	if( m_shouldCount )
-		behaviorCooldownCounter();
+	/*if( m_shouldCount )
+		behaviorCooldownCounter();*/
 
 	WrapAround( m_position, m_gameWorld->getWindow()->getSize().x, m_gameWorld->getWindow()->getSize().y );
 }
@@ -134,16 +124,21 @@ float Enemy::getDeltaTime() const
 
 void Enemy::switchBehavior()
 {
-	if( m_steeringBehaviors->isOn( AI::Behaviors::Behavior::WANDER ) )
+
+	// float m_hideWeight = 200.0f * .01f;
+	// float m_wanderWeight = 200.0f * 1.0f;
+
+	if( hide )
 	{
 		m_steeringBehaviors->setWanderWeight( 1.0F );
-		m_steeringBehaviors->setHideWeight( 1.0F );
+		m_steeringBehaviors->setHideWeight( 0.0F );
+		hide = false;
 	}
-
 	else
 	{
-		m_steeringBehaviors->setWanderWeight( 2.0F );
-		m_steeringBehaviors->setHideWeight( 0.0F );
+		m_steeringBehaviors->setWanderWeight( 1.0F );
+		m_steeringBehaviors->setHideWeight( 0.01F );
+		hide = true;
 	}
 
 	m_behaviorSwitchTime = static_cast< int >( std::floor( Math::randFloat() * 10.0F + 5.0F ) ) * 1000;
@@ -158,6 +153,8 @@ void Enemy::behaviorCooldownCounter()
 	if( elapsed >= std::chrono::milliseconds( m_behaviorSwitchTime ) )
 	{
 		switchBehavior();
+		m_behaviorSwitchTime = static_cast< int >( std::floor( Math::randFloat() * 10.0F + 5.0F ) ) * 1000;
+		m_behaviorCooldown	 = std::chrono::steady_clock::now();
 	}
 }
 
