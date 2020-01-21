@@ -136,19 +136,18 @@ void Enemy::switchBehavior()
 {
 	if( m_steeringBehaviors->isOn( AI::Behaviors::Behavior::WANDER ) )
 	{
-		m_steeringBehaviors->turnBehaviorOff( AI::Behaviors::Behavior::WANDER );
-		m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::HIDE );
-		std::cout << "Switched to hide \n";
+		m_steeringBehaviors->setWanderWeight( 1.0F );
+		m_steeringBehaviors->setHideWeight( 1.0F );
 	}
 
 	else
 	{
-		m_steeringBehaviors->turnBehaviorOff( AI::Behaviors::Behavior::HIDE );
-		m_steeringBehaviors->turnBehaviorOn( AI::Behaviors::Behavior::WANDER );
-		std::cout << "Switched to wander\n";
+		m_steeringBehaviors->setWanderWeight( 2.0F );
+		m_steeringBehaviors->setHideWeight( 0.0F );
 	}
 
-	m_behaviorCooldown = std::chrono::steady_clock::now();
+	m_behaviorSwitchTime = static_cast< int >( std::floor( Math::randFloat() * 10.0F + 5.0F ) ) * 1000;
+	m_behaviorCooldown	 = std::chrono::steady_clock::now();
 }
 
 void Enemy::behaviorCooldownCounter()

@@ -608,9 +608,9 @@ void Behaviors::checkForBehaviorsChanges( const vector< shared_ptr< Graphics::En
 		}
 	}
 
-	if( neighborCounter >= attackLimit || enemies.size() < attackLimit )
+	if( neighborCounter >= groupLimit || enemies.size() <= attackLimit )
 	{
-		m_enemy.disableCounter ();
+		m_enemy.disableCounter();
 		turnBehaviorOff( Behavior::FLEE );
 		turnBehaviorOff( Behavior::EVADE );
 		turnBehaviorOn( Behavior::COHESION );

@@ -60,6 +60,15 @@ public:
 	void turnBehaviorOff( Behavior behavior );
 	bool isOn( Behavior behavior );
 
+	void setWanderWeight( float weight )
+	{
+		m_wanderWeight = weight * 200.0F;
+	}
+	void setHideWeight( float weight )
+	{
+		m_hideWeight = weight * 200.0F;
+	}
+
 private:
 	void createFeelers();
 
@@ -95,18 +104,21 @@ private:
 	constexpr static inline float m_wallDetectionFeelersLen{ 40.0f };
 	constexpr static inline float m_viewDistance{ 50.0f };
 
-	constexpr static inline float m_separationWeight		= 200.0f * 8.0f;
-	constexpr static inline float m_alignmentWeight			= 200.0f * 1.0f;
-	constexpr static inline float m_cohensionWeight			= 200.0f * 1.0f;
-	constexpr static inline float m_wanderWeight			= 200.0f * 1.0f;
+	constexpr static inline float m_separationWeight = 200.0f * 8.0f;
+	constexpr static inline float m_alignmentWeight	 = 200.0f * 1.0f;
+	constexpr static inline float m_cohensionWeight	 = 200.0f * 1.0f;
+
+	float m_wanderWeight = 200.0f * 5.0f;
+	float m_hideWeight	 = 200.0f * 0.5f;
+
 	constexpr static inline float m_fleeWeight				= 200.0f * 5.0f;
 	constexpr static inline float m_evadeWeight				= 200.0f * 0.01f;
 	constexpr static inline float m_obstacleAvoidanceWeight = 200.0f * 10.0f;
 	constexpr static inline float m_wallAvoidanceWeight		= 200.0f * 10.0f;
 	constexpr static inline float m_seekWeight				= 200.0f * 1.0f;
-	constexpr static inline float m_hideWeight				= 200.0f * 1.0f;
 	constexpr static inline float m_pursuitWeight			= 200.0f * 1.0f;
 	constexpr static inline int attackLimit					= 3;
+	constexpr static inline int groupLimit					= 3;
 	constexpr static inline float friendDistance{ 100.0F };
 };
 } // namespace SteeringBehaviors::AI
